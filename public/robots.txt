@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nocoderguy-group.gitlab.io/galexykeyboard/sitemap-index.xml

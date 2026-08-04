@@ -1,0 +1,15 @@
+# GalexyKeyboard
+
+> GalexyKeyboard is a free online multilingual virtual keyboard. Users pick a language, type with on-screen keys (or their remapped physical keyboard), then copy the text and paste it anywhere. No download, no sign-up, nothing typed is sent to a server.
+
+## Keyboards
+
+Each language has a dedicated page at /<language>-keyboard/ (for example /arabic-keyboard/, /hindi-keyboard/). Every page contains the working keyboard tool, a plain-language explanation of the layout, step-by-step usage instructions, and a FAQ answering common questions such as "How do I type Arabic without an Arabic keyboard?".
+
+Supported languages include: Hindi, Arabic, Bengali, Assamese, Urdu, Russian, Ukrainian, Greek, Hebrew, Thai, Japanese (hiragana), Korean (hangul with jamo composition), Spanish, Tamil, and Persian/Farsi. More are added regularly.
+
+## Key facts
+
+- 100% free, no account required, works on desktop and mobile browsers.
+- Right-to-left scripts (Arabic, Hebrew, Urdu, Farsi) are fully supported.
+- All typing happens locally in the browser; no text is stored or transmitted.

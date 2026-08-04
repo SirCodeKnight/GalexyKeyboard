@@ -1,0 +1,192 @@
+---
+import { KEYBOARDS } from '../data/keyboards';
+
+interface Props {
+  title: string;
+  description: string;
+  jsonld?: unknown[];
+}
+const { title, description, jsonld = [] } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.pathname;
+---
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link rel="sitemap" href={`${base}/sitemap-index.xml`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="GalexyKeyboard" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {jsonld.map((obj) => (
+      <script type="application/ld+json" set:html={JSON.stringify(obj)} />
+    ))}
+  </head>
+  <body class="bg-paper text-ink font-sans antialiased min-h-screen flex flex-col">
+    <header class="border-b border-ink/10 bg-cream/90 backdrop-blur sticky top-0 z-20">
+      <div class="max-w-content mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+        <a href={`${base}/`} class="flex items-center gap-2.5 group" aria-label="GalexyKeyboard home">
+          <span class="inline-grid grid-cols-3 gap-[3px] w-6 h-6 p-[3px] rounded-md bg-ink">
+            <span class="rounded-[2px] bg-paper"></span><span class="rounded-[2px] bg-paper"></span><span class="rounded-[2px] bg-brass"></span>
+            <span class="col-span-3 rounded-[2px] bg-paper"></span>
+          </span>
+          <span class="font-display text-lg tracking-tight">Galexy<span class="text-brassdark">Keyboard</span></span>
+        </a>
+        <nav class="flex items-center gap-5 text-sm" aria-label="Main">
+          <a href={`${base}/#keyboards`} class="hover:text-brassdark transition-colors">All keyboards</a>
+          <a href={`${base}/about/`} class="hover:text-brassdark transition-colors hidden sm:inline">About</a>
+          <a href={`${base}/contact/`} class="hover:text-brassdark transition-colors hidden sm:inline">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="flag-marquee-container border-b border-ink/5 bg-cream/30 py-2.5 overflow-hidden relative w-full select-none shadow-[inset_0_-2px_4px_rgba(0,0,0,0.02)] z-10">
+      <div class="flag-marquee-content flex gap-8 whitespace-nowrap animate-marquee">
+        {[...KEYBOARDS, ...KEYBOARDS].map((k) => (
+          <a href={`${base}/${k.slug}/`} class="inline-flex items-center gap-2 hover:scale-105 transition-transform duration-200 group">
+            <img src={`https://flagcdn.com/w40/${k.countryCode}.png`} class="w-5 h-3.5 rounded-[2px] object-cover shadow-sm border border-ink/10" alt={k.name} loading="lazy" />
+            <span class="text-xs font-semibold tracking-wider text-ink/75 group-hover:text-brassdark">{k.name}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <footer class="mt-16 border-t border-ink/10 bg-night text-paper/80">
+      <div class="max-w-content mx-auto px-4 sm:px-6 py-12 grid gap-10 md:grid-cols-3">
+        <div>
+          <p class="font-display text-lg text-paper">GalexyKeyboard</p>
+          <p class="mt-3 text-sm leading-relaxed">A free online multilingual keyboard. Type in any supported language, copy the text, and send it anywhere. Everything runs in your browser; nothing you type is stored or transmitted.</p>
+        </div>
+        <nav aria-label="All language keyboards" class="md:col-span-2">
+          <p class="text-sm font-semibold uppercase tracking-wider text-paper/60">Language keyboards</p>
+          <ul class="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-sm">
+            {KEYBOARDS.map((k) => (
+              <li><a href={`${base}/${k.slug}/`} class="hover:text-brass transition-colors">{k.name} keyboard</a></li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+      <div class="border-t border-paper/10">
+        <div class="max-w-content mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3 text-xs text-paper/60">
+          <p>&copy; {new Date().getFullYear()} GalexyKeyboard. All rights reserved.</p>
+          <p class="flex gap-4">
+            <a href={`${base}/about/`} class="hover:text-paper">About</a>
+            <a href={`${base}/privacy/`} class="hover:text-paper">Privacy</a>
+            <a href={`${base}/contact/`} class="hover:text-paper">Contact</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <style is:global>
+      /* Endless Marquee Animation */
+      @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      .animate-marquee {
+        animation: marquee 30s linear infinite;
+        display: inline-flex;
+        width: max-content;
+      }
+      .flag-marquee-container:hover .animate-marquee {
+        animation-play-state: paused;
+      }
+
+      /* Glowing / Shimmer Sweep ("Snow band" effect) */
+      .flag-marquee-container::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%; width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45) 45%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.45) 55%, transparent);
+        transform: skewX(-25deg);
+        animation: shimmer-sweep 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        pointer-events: none;
+      }
+      @keyframes shimmer-sweep {
+        0% { left: -100%; }
+        25%, 100% { left: 100%; }
+      }
+
+      /* 3D Keys Styles */
+      .key-3d {
+        position: relative;
+        background: linear-gradient(to bottom, #ffffff 0%, #f0f0f0 100%);
+        border: 1px solid rgba(0,0,0,0.12);
+        box-shadow: 
+          0 4px 0 0 rgba(0,0,0,0.18), 
+          inset 0 1px 0 0 rgba(255,255,255,0.8),
+          0 6px 10px 0 rgba(0,0,0,0.1);
+        transform: translateY(0);
+        transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease;
+      }
+      .key-3d:active, .key-3d.active-press {
+        background: linear-gradient(to bottom, #eaeaea 0%, #dfdfdf 100%);
+        box-shadow: 
+          0 1px 0 0 rgba(0,0,0,0.15), 
+          inset 0 1px 2px 0 rgba(0,0,0,0.1),
+          0 2px 4px 0 rgba(0,0,0,0.05);
+        transform: translateY(3px);
+      }
+
+      /* Cinematic Actions Button Style */
+      .btn-cinematic-3d {
+        position: relative;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: #f8fafc;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 
+          0 4px 0 0 #020617,
+          0 4px 12px 0 rgba(0, 0, 0, 0.3),
+          inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
+        transform: translateY(0);
+        transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+      .btn-cinematic-3d:hover {
+        background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+        box-shadow: 
+          0 4px 0 0 #020617,
+          0 6px 16px 0 rgba(0, 0, 0, 0.35),
+          inset 0 1px 1px 0 rgba(255, 255, 255, 0.25);
+      }
+      .btn-cinematic-3d:active {
+        box-shadow: 
+          0 1px 0 0 #020617,
+          0 1px 4px 0 rgba(0, 0, 0, 0.2),
+          inset 0 1px 3px 0 rgba(0,0,0,0.4);
+        transform: translateY(3px);
+      }
+
+      /* Custom ads side containers */
+      .ad-banner-vertical {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed rgba(27, 38, 59, 0.15);
+        background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(243,244,246,0.8) 100%);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        height: 600px;
+        position: sticky;
+        top: 5rem;
+        box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.02);
+      }
+    </style>
+  </body>
+</html>
