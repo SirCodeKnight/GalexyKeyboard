@@ -1,0 +1,2 @@
+# Ignore worker directory to prevent Wrangler upload warnings
+_worker.js
