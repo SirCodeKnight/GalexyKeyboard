@@ -1,0 +1,71 @@
+---
+---
+
+<div id="adblock-overlay" class="fixed inset-0 z-[9999] bg-night/95 backdrop-blur-xl hidden flex flex-col items-center justify-center p-6 opacity-0 transition-opacity duration-300">
+  <div class="bg-paper p-8 sm:p-12 rounded-3xl shadow-2xl max-w-lg w-full text-center border border-ink/10 relative overflow-hidden">
+    <div class="w-20 h-20 bg-brass/20 text-brassdark rounded-full flex items-center justify-center mx-auto mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+    </div>
+    <h2 class="text-3xl font-display text-ink mb-4">Ad Blocker Detected</h2>
+    <p class="text-ink/80 leading-relaxed mb-8">
+      We rely on ads to keep GalexyKeyboard 100% free for everyone. 
+      Please disable your ad blocker or whitelist our site to continue typing.
+    </p>
+    <button onclick="window.location.reload()" class="w-full bg-ink text-paper py-4 rounded-xl font-medium text-lg hover:bg-ink/90 transition shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform">
+      I have disabled my ad blocker
+    </button>
+    
+    <div class="absolute -top-10 -right-10 w-40 h-40 bg-brass/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-brass/10 rounded-full blur-3xl pointer-events-none"></div>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    function detectAdBlock() {
+      const bait = document.createElement('div');
+      bait.className = 'ad-banner adsbox sponsor doubleclick-ad pub_300x250 pub_300x250m pub_728x90 text-ad textAd text_ad text_ads text-ads text-ad-links';
+      bait.style.position = 'absolute';
+      bait.style.top = '-999px';
+      bait.style.left = '-999px';
+      bait.style.width = '10px';
+      bait.style.height = '10px';
+      
+      document.body.appendChild(bait);
+      
+      setTimeout(function() {
+        const isBlocked = bait.offsetHeight === 0 || 
+                          bait.offsetWidth === 0 || 
+                          window.getComputedStyle(bait).display === 'none' ||
+                          bait.hidden;
+                          
+        if (isBlocked) {
+          const overlay = document.getElementById('adblock-overlay');
+          if (overlay) {
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            setTimeout(() => {
+              overlay.classList.remove('opacity-0');
+              overlay.classList.add('opacity-100');
+            }, 50);
+          }
+        }
+        
+        if (bait.parentNode) {
+          bait.parentNode.removeChild(bait);
+        }
+      }, 500);
+    }
+
+    if (document.readyState === 'complete') {
+      detectAdBlock();
+    } else {
+      window.addEventListener('load', detectAdBlock);
+    }
+  })();
+</script>

@@ -1,5 +1,6 @@
 ---
 import { KEYBOARDS } from '../data/keyboards';
+import AdBlockDetector from '../components/AdBlockDetector.astro';
 
 interface Props {
   title: string;
@@ -188,6 +189,7 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : As
         box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.02);
       }
     </style>
+    <AdBlockDetector />
     <script is:inline type='text/javascript' src='//pl30694595.effectivecpmnetwork.com/2d/f8/f5/2df8f593209969573cbb9795980fb6ed.js'></script>
   </body>
 </html>
