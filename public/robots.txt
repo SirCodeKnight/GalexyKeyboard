@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://nocoderguy-group.gitlab.io/galexykeyboard/sitemap-index.xml
+Sitemap: https://wowgalexy.in/sitemap-index.xml
