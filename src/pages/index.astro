@@ -2,6 +2,11 @@
 import Base from '../layouts/Base.astro';
 import { KEYBOARDS } from '../data/keyboards';
 import AnimeMascot from '../components/AnimeMascot.astro';
+import BlogCard from '../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const recentPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
 
 const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const site = (Astro.site?.href ?? '').replace(/\/+$/, '');
@@ -143,6 +148,24 @@ const jsonld = [
   </section>
 
   <section class="max-w-content mx-auto px-4 sm:px-6 py-14">
+    <div class="flex items-end justify-between mb-8">
+      <div>
+        <h2 class="font-display text-3xl">From the blog</h2>
+        <p class="mt-2 text-ink/70">Typing tips, privacy guides, and language insights.</p>
+      </div>
+      <a href={`${base}/blog/`} class="hidden sm:inline-block text-sm font-semibold text-brassdark hover:underline mb-1">View all articles &rarr;</a>
+    </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {recentPosts.map((post) => (
+        <BlogCard post={post} />
+      ))}
+    </div>
+    <div class="mt-6 sm:hidden text-center">
+      <a href={`${base}/blog/`} class="inline-block text-sm font-semibold text-brassdark hover:underline">View all articles &rarr;</a>
+    </div>
+  </section>
+
+  <section class="max-w-content mx-auto px-4 sm:px-6 py-14 border-t border-ink/10">
     <h2 class="font-display text-3xl">Frequently asked questions</h2>
     <div class="mt-6 divide-y divide-ink/10 border-y border-ink/10 max-w-3xl">
       {homeFaqs.map((f) => (
