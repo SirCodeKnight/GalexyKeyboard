@@ -8,6 +8,8 @@ export interface KeyboardDef {
   name: string;
   native: string;
   dir: 'ltr' | 'rtl';
+  langCode?: string;
+  keywords?: string;
   autoUpper?: boolean;
   compose?: boolean; // Hangul jamo composition
   rows: Key[][];
@@ -67,6 +69,8 @@ const def = (
 export const KEYBOARDS: KeyboardDef[] = [
   def({
     slug: 'hindi-keyboard', name: 'Hindi', native: '\u0939\u093f\u0928\u094d\u0926\u0940', dir: 'ltr',
+    langCode: 'hi',
+    keywords: 'hindi keyboard online, hindi typing online, type in hindi, devanagari keyboard, hindi keyboard for pc',
     title: 'Hindi Keyboard Online \u2013 Type in Hindi (\u0939\u093f\u0928\u094d\u0926\u0940) Free',
     description: 'Free online Hindi keyboard (InScript layout). Type in Devanagari with matras and conjuncts, then copy-paste your Hindi text anywhere. No download, works on mobile.',
     tagline: 'Type Devanagari with the standard InScript layout \u2014 matras, conjuncts and all.',
@@ -101,6 +105,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'arabic-keyboard', name: 'Arabic', native: '\u0627\u0644\u0639\u0631\u0628\u064a\u0629', dir: 'rtl',
+    langCode: 'ar',
+    keywords: 'arabic keyboard online, type arabic online, لوحة مفاتيح عربية, arabic typing, arabic keyboard for pc',
     title: 'Arabic Keyboard Online \u2013 Type Arabic (\u0644\u0648\u062d\u0629 \u0627\u0644\u0645\u0641\u0627\u062a\u064a\u062d \u0627\u0644\u0639\u0631\u0628\u064a\u0629) Free',
     description: 'Free online Arabic keyboard with all 28 letters, hamza forms and harakat diacritics. Type Arabic right-to-left, copy and paste anywhere. No download needed.',
     tagline: 'The full Arabic 101 layout with hamza forms and a dedicated harakat row.',
@@ -136,6 +142,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'bengali-keyboard', name: 'Bengali', native: '\u09ac\u09be\u0982\u09b2\u09be', dir: 'ltr',
+    langCode: 'bn',
+    keywords: 'bengali keyboard online, bangla keyboard, type bangla online, বাংলা কীবোর্ড, bangla keyboard for pc',
     title: 'Bengali Keyboard Online \u2013 Type in Bangla (\u09ac\u09be\u0982\u09b2\u09be) Free',
     description: 'Free online Bengali keyboard (InScript). Type Bangla script with kars and juktakkhor, copy and paste your Bengali text anywhere. Works on mobile, no download.',
     tagline: 'Standard Bangla InScript layout with vowel signs and conjunct support.',
@@ -170,37 +178,77 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'assamese-keyboard', name: 'Assamese', native: '\u0985\u09b8\u09ae\u09c0\u09af\u09bc\u09be', dir: 'ltr',
-    title: 'Assamese Keyboard Online \u2013 Type in Assamese (\u0985\u09b8\u09ae\u09c0\u09af\u09bc\u09be) Free',
-    description: 'Free online Assamese keyboard with the distinct letters \u09f0 (ra) and \u09f1 (va). Type Assamese script, copy and paste it anywhere. No download, mobile friendly.',
-    tagline: 'Full Assamese script including the distinct \u09f0 and \u09f1 letters.',
-    intro: 'Type Assamese online with a layout built for the Assamese script \u2014 not just a relabeled Bengali keyboard. It includes the two letters that make Assamese distinct: \u09f0 (ra, with the diagonal stroke) and \u09f1 (va), alongside the full set of vowels, vowel signs and consonants shared with the Eastern Nagari script. Use the hasanta (\u09cd) for conjuncts, and copy your text straight into WhatsApp, Facebook or any document.',
-    tips: ['Assamese \u09f0 (ra) and \u09f1 (va) are on the layout directly \u2014 no workarounds needed.', 'Consonant + \u09cd + consonant builds conjuncts, e.g. \u0995 + \u09cd + \u09b7 = \u0995\u09cd\u09b7.', 'Shift reaches independent vowels and aspirated consonants.'],
-    extraFaqs: [{ q: 'What is the difference between the Assamese and Bengali keyboards?', a: 'Both use the Eastern Nagari script, but Assamese uses \u09f0 for ra (Bengali uses \u09b0) and has the extra letter \u09f1 (va). This keyboard puts \u09f0 and \u09f1 directly on the layout so you type genuine Assamese text.' }],
+    langCode: 'as',
+    keywords: 'assamese keyboard, english to assamese keyboard, rodali assamese keyboard, rodali assamese keyboard for windows 10, assamese keyboard for pc, rodali assamese keyboard for windows, assamese keyboard download, assamese keyboard online, assamese typing online, oxomiya keyboard, type assamese on pc, অসমীয়া কী-বৰ্ড',
+    title: 'Assamese Keyboard Online (\u0985\u09b8\u09ae\u09c0\u09af\u09bc\u09be \u0995\u09c0-\u09ac\u09f0\u09cd\u09a1) \u2013 English to Assamese & Rodali Typing for PC',
+    description: 'Free online Assamese keyboard (\u0985\u09b8\u09ae\u09c0\u09af\u09bc\u09be \u0995\u09c0-\u09ac\u09f0\u09cd\u09a1) & English to Assamese typing tool for PC, Windows 10/11 & mobile. No Rodali download needed \u2014 type, copy and paste instantly.',
+    tagline: 'Free online Assamese keyboard (\u0985\u09b8\u09ae\u09c0\u09af\u09bc\u09be \u0995\u09c0-\u09ac\u09f0\u09cd\u09a1) for PC and Mobile \u2014 No software download needed.',
+    intro: 'Welcome to the fastest online Assamese keyboard (\u0985\u09b8\u09ae\u09c0\u09af\u09bc\u09be \u0995\u09c0-\u09ac\u09f0\u09cd\u09a1). If you are looking for an Assamese keyboard for PC, Windows 10, Windows 11, or mobile without needing to download and install heavy software like Rodali Assamese keyboard or Avro, this browser-based tool allows you to type directly in authentic Assamese script. Unlike generic Bengali keyboards, our layout includes genuine Assamese characters \u09f0 (ra) and \u09f1 (va), along with complete vowel modifiers (\u09b8\u09cd\u09ac\u09f0\u09ac\u09f0\u09cd\u09a3/\u0995\u09be\u09f0) and conjuncts (\u09af\u09c1\u0995\u09cd\u09a4\u09be\u0995\u09cd\u09b7\u09f0). Whether you need English to Assamese typing, Rodali-style phonetic reference, or standard InScript input, type with your physical PC keyboard or on-screen keys, copy with one click, and paste anywhere into WhatsApp, Facebook, MS Word, Google Docs, or government portals.',
+    tips: [
+      'Authentic Assamese Characters: Type genuine Assamese \u09f0 (ra with diagonal stroke) and \u09f1 (va) directly on the layout \u2014 no Bengali substitutes needed.',
+      'Assamese Keyboard for PC / Windows 10: Check "Physical keyboard" to type using your desktop or laptop QWERTY keyboard remapped to Assamese InScript positions.',
+      'How to Type Yuktakshar (\u09af\u09c1\u0995\u09cd\u09a4\u09be\u0995\u09cd\u09b7\u09f0): Type Consonant + \u09cd (hasanta) + Consonant (e.g. \u0995 + \u09cd + \u09b7 = \u0995\u09cd\u09b7, \u099c + \u09cd + \u099e = \u099c\u09cd\u099e, \u09a4 + \u09cd + \u09f0 = \u09a4\u09cd\u09f0, \u09b6 + \u09cd + \u09f0 = \u09b6\u09cd\u09f0).',
+      'No Software Download: Perfect alternative to downloading Rodali Assamese keyboard setup files on Windows 10 / 11 \u2014 works instantly in any web browser.',
+      'Shift Key Modifiers: Use Shift for independent vowels (\u0985, \u0986, \u0987, \u0988, \u0989, \u098a, \u098b, \u098f, \u0990, \u0993, \u0994) and aspirated consonants (\u0996, \u0998, \u099a, \u099b, \u09a5, \u09a7, \u09ab, \u09ad).'
+    ],
+    extraFaqs: [
+      {
+        q: 'How do I use this Assamese keyboard online without downloading software?',
+        a: 'You do not need to download or install any Assamese keyboard setup files or language packs. Open GalexyKeyboard in your web browser (Chrome, Edge, Safari, Firefox), click or tap the on-screen keys (or enable Physical Keyboard on your PC), type your text, and click the "Copy" button. You can then paste your Assamese text into WhatsApp, Facebook, MS Word, or emails.'
+      },
+      {
+        q: 'Is this an alternative to Rodali Assamese keyboard for Windows 10 and PC?',
+        a: 'Yes! While Rodali Assamese keyboard is popular software for Windows 10 and PC, it requires downloading an installation file (.exe), configuring fonts, and administrative permissions. GalexyKeyboard runs 100% in your browser on Windows 10, Windows 11, Mac, Linux, and mobile devices without any downloads, offering clean Unicode Assamese text that works everywhere.'
+      },
+      {
+        q: 'Can I do English to Assamese typing with this tool?',
+        a: 'Yes. Our tool is designed for English to Assamese keyboard users. You can use our on-screen visual layout and common phrases reference to easily compose Assamese words from your English QWERTY keyboard. All characters render in modern Unicode, ensuring high compatibility across all digital platforms.'
+      },
+      {
+        q: 'What is the difference between an Assamese keyboard and a Bengali keyboard?',
+        a: 'Although both languages use the Eastern Nagari script family, Assamese has two distinct letters: \u09f0 (ra, written with a diagonal slash) and \u09f1 (va). Bengali keyboards only provide \u09b0 and lack \u09f1 entirely. Our Assamese keyboard includes dedicated keys for \u09f0 and \u09f1 so your text is 100% grammatically correct Assamese (\u0985\u09b8\u09ae\u09c0\u09af\u09bc\u09be).'
+      },
+      {
+        q: 'How do I type Assamese conjunct letters (\u09af\u09c1\u0995\u09cd\u09a4\u09be\u0995\u09cd\u09b7\u09f0 / Yuktakshar)?',
+        a: 'To type a conjunct letter (\u09af\u09c1\u0995\u09cd\u09a4\u09be\u0995\u09cd\u09b7\u09f0), type the first consonant, then the Hasanta key (\u09cd), and then the second consonant. For example: \u0995 + \u09cd + \u09b7 = \u0995\u09cd\u09b7 (Khyo), \u09b8 + \u09cd + \u09a4 = \u09b8\u09cd\u09a4 (Sto), \u09a6 + \u09cd + \u09a7 = \u09a6\u09cd\u09a7 (D-dho), and \u09f0 + \u09cd + \u0995 = \u09f0\u09cd\u0995 (Reph).'
+      },
+      {
+        q: 'Can I type Assamese for Assam government forms and exams?',
+        a: 'Yes. All text typed on GalexyKeyboard is generated in standardized Unicode Assamese. It is fully compatible with official Assam government portals (such as Assam Direct Recruitment Commission, SEBA, AHSEC, and Gauhati University), banking forms, and online applications.'
+      }
+    ],
     rows: [
       r('\u09cc|\u0994 \u09c8|\u0990 \u09be|\u0986 \u09c0|\u0988 \u09c2|\u098a \u09ac|\u09ad \u09b9|\u0999 \u0997|\u0998 \u09a6|\u09a7 \u099c|\u099d \u09a1|\u09a2 \u09bc|\u099e'),
       r('\u09cb|\u0993 \u09c7|\u098f \u09cd|\u0985 \u09bf|\u0987 \u09c1|\u0989 \u09aa|\u09ab \u09f0|\u09dc \u0995|\u0996 \u09a4|\u09a5 \u099a|\u099b \u099f|\u09a0'),
       r('\u0982|\u0981 \u09ae|\u09a3 \u09a8|\u09a3 \u09af|\u09df \u09b2|\u09b2 \u09b8|\u09b6 \u09f1|\u09b7 \u0964|\u09ce'),
     ],
-    countryCode: 'in', welcome: 'স্বাগতম!', meme: 'assamese.png',
-    scriptHistory: 'Assamese uses a variant of the Eastern Nagari script that is closely related to Bengali but includes distinct letter forms. The most important differences are ৰ (ra, with a diagonal stroke) and ৱ (va), which do not exist in Bengali. Assamese is the official language of the Indian state of Assam and is spoken by approximately 15 million people. The script has a literary tradition dating back to the 13th century, with early manuscripts written on sanchi bark (tree bark). Assamese digital content has grown rapidly since 2010, driven by social media and smartphone adoption in northeast India.',
+    countryCode: 'in', welcome: 'স্বাগতম! (Welcome to Assamese Keyboard)', meme: 'assamese.png',
+    scriptHistory: 'The Assamese script (\u0985\u09b8\u09ae\u09c0\u09af\u09bc\u09be \u09b2\u09bf\u09aa\u09bf) has a rich history originating from the ancient Kamarupi script and Brahmi, dating back to 5th-century rock inscriptions in the Brahmaputra valley. Assamese has a vibrant literary tradition that includes the early Charyapada texts, the 15th-century Vaishnavite literature of Srimanta Sankardev and Madhavdev, and modern printed literature starting with the American Baptist publication Orunodoi (1846). Standardizing Unicode support for the distinct letters \u09f0 (ra) and \u09f1 (va) has empowered the Assamese language in the digital age, enabling seamless communication across smartphones, social platforms, and digital news media.',
     commonPhrases: [
-      { phrase: 'নমস্কাৰ', transliteration: 'nomoskar', meaning: 'Hello' },
-      { phrase: 'আপুনি কেনে আছে?', transliteration: 'apuni kene achhe?', meaning: 'How are you?' },
+      { phrase: 'নমস্কাৰ', transliteration: 'nomoskar', meaning: 'Hello / Greetings' },
+      { phrase: 'আপোনাৰ খবৰ কি?', transliteration: 'aponar khobor ki?', meaning: 'How are you?' },
+      { phrase: 'আপোনাক লগ পাই ভাল লাগিল', transliteration: 'aponak log pai bhal lagil', meaning: 'Nice to meet you' },
       { phrase: 'ধন্যবাদ', transliteration: 'dhonnobad', meaning: 'Thank you' },
       { phrase: 'অনুগ্ৰহ কৰি', transliteration: 'onugroho kori', meaning: 'Please' },
       { phrase: 'মোৰ নাম ___', transliteration: 'mur naam ___', meaning: 'My name is ___' },
+      { phrase: 'মই অসমীয়া ভাল পাওঁ', transliteration: 'moi oxomiya bhal pao', meaning: 'I love Assamese' },
       { phrase: 'হয় / নহয়', transliteration: 'hoy / nohoy', meaning: 'Yes / No' },
+      { phrase: 'বিদায় / পুনৰ লগ পাম', transliteration: 'biday / punor log pam', meaning: 'Goodbye / See you again' },
+      { phrase: 'শুভ ৰাতিপুৱা', transliteration: 'shubh ratipuwa', meaning: 'Good morning' },
     ],
     useCases: [
-      'Typing Assamese on social media (Facebook, Instagram) when your device only has English or Hindi keyboards.',
-      'Writing Assamese blog posts, articles or creative content with correct ৰ and ৱ letterforms.',
-      'Communicating with family in Assam via WhatsApp or Telegram in proper Assamese script.',
-      'Students and researchers typing Assamese for academic papers or language studies.',
+      'Typing Assamese on Windows 10/11 PC, Mac, or laptop without downloading Rodali or installing extra software packages.',
+      'Posting Assamese updates, poems, and comments on Facebook, YouTube, Instagram, and X (Twitter) with correct \u09f0 and \u09f1 letters.',
+      'Filling out Assam government recruitment forms (ADRE, APSC, SEBA, AHSEC) and university portals in standard Unicode Assamese.',
+      'Sending WhatsApp and Telegram messages to family and friends in authentic Assamese script (\u0985\u09b8\u09ae\u09c0\u09af\u09bc\u09be).',
+      'Writers, journalists, and students drafting Assamese essays, articles, and research papers with zero font errors.',
     ],
-    layoutDescription: 'This layout is built specifically for Assamese, not a relabelled Bengali keyboard. The distinct Assamese ৰ (ra) and ৱ (va) are placed directly on the main rows. The rest of the layout follows the InScript standard shared with Bengali: vowel signs on the left, consonants on the right, with the hasanta centrally placed for conjuncts.',
+    layoutDescription: 'The GalexyKeyboard Assamese layout is optimized for both standard InScript typists and Rodali / PC keyboard users. Vowel signs and modifiers (কাৰ) occupy the left side of the keyboard, while core consonants (ব্যঞ্জনবৰ্ণ) are placed on the right side. The hasanta (\u09cd) is centrally located for quick typing of conjuncts (\u09af\u09c1\u0995\u09cd\u09a4\u09be\u0995\u09cd\u09b7\u09f0). Distinct Assamese characters \u09f0 (ra) and \u09f1 (va) are placed directly on the home and bottom rows for instant access.',
   }),
   def({
     slug: 'urdu-keyboard', name: 'Urdu', native: '\u0627\u0631\u062f\u0648', dir: 'rtl',
+    langCode: 'ur',
+    keywords: 'urdu keyboard online, urdu typing online, type urdu online, urdu keyboard for pc, nastaliq typing',
     title: 'Urdu Keyboard Online \u2013 Type in Urdu (\u0627\u0631\u062f\u0648) Free',
     description: 'Free online Urdu keyboard. Type right-to-left Urdu with all letters including \u067e \u0686 \u0698 \u06af \u0691 \u0688, copy and paste anywhere. No download needed.',
     tagline: 'Right-to-left Urdu with every letter the Arabic layout is missing.',
@@ -236,6 +284,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'russian-keyboard', name: 'Russian', native: '\u0440\u0443\u0441\u0441\u043a\u0438\u0439', dir: 'ltr', autoUpper: true,
+    langCode: 'ru',
+    keywords: 'russian keyboard online, type russian online, cyrillic keyboard, russian typing online, jcuken keyboard',
     title: 'Russian Keyboard Online \u2013 Type Cyrillic (\u0419\u0426\u0423\u041a\u0415\u041d) Free',
     description: 'Free online Russian keyboard with the standard \u0419\u0426\u0423\u041a\u0415\u041d Cyrillic layout including \u0451. Type Russian, copy and paste it anywhere. No download.',
     tagline: 'The standard \u0419\u0426\u0423\u041a\u0415\u041d layout, \u0451 included.',
@@ -270,6 +320,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'ukrainian-keyboard', name: 'Ukrainian', native: '\u0443\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430', dir: 'ltr', autoUpper: true,
+    langCode: 'uk',
+    keywords: 'ukrainian keyboard online, type ukrainian online, ukrainian cyrillic typing, ukrainian keyboard for pc',
     title: 'Ukrainian Keyboard Online \u2013 Type Ukrainian (\u0443\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430) Free',
     description: 'Free online Ukrainian keyboard with \u0457 \u0454 \u0456 \u0491 on the standard layout. Type Ukrainian Cyrillic, copy and paste anywhere. No download, mobile friendly.',
     tagline: 'Standard Ukrainian layout with \u0457, \u0454, \u0456 and \u0491 in their proper places.',
@@ -303,6 +355,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'greek-keyboard', name: 'Greek', native: '\u03b5\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac', dir: 'ltr', autoUpper: true,
+    langCode: 'el',
+    keywords: 'greek keyboard online, type greek alphabet, greek letters keyboard, greek typing online, greek math symbols',
     title: 'Greek Keyboard Online \u2013 Type Greek Letters (\u03b1\u03b2\u03b3) Free',
     description: 'Free online Greek keyboard with accented vowels and final sigma. Type Greek text or math symbols, copy and paste anywhere. No download required.',
     tagline: 'Modern Greek with accents (\u03ac \u03ad \u03ae\u2026) and final sigma \u03c2.',
@@ -337,6 +391,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'hebrew-keyboard', name: 'Hebrew', native: '\u05e2\u05d1\u05e8\u05d9\u05ea', dir: 'rtl',
+    langCode: 'he',
+    keywords: 'hebrew keyboard online, type hebrew online, hebrew typing keyboard, hebrew keyboard for pc',
     title: 'Hebrew Keyboard Online \u2013 Type Hebrew (\u05e2\u05d1\u05e8\u05d9\u05ea) Free',
     description: 'Free online Hebrew keyboard with the standard Israeli layout and all final letters. Type right-to-left Hebrew, copy and paste anywhere. No download.',
     tagline: 'Standard Israeli layout with all five final letters.',
@@ -371,6 +427,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'thai-keyboard', name: 'Thai', native: '\u0e44\u0e17\u0e22', dir: 'ltr',
+    langCode: 'th',
+    keywords: 'thai keyboard online, type thai online, thai typing keyboard, kedmanee keyboard online',
     title: 'Thai Keyboard Online \u2013 Type Thai (\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22) Free',
     description: 'Free online Thai keyboard with the standard Kedmanee layout, tone marks and Thai numerals. Type Thai, copy and paste anywhere. No download needed.',
     tagline: 'The Kedmanee layout with tone marks, vowels and Thai numerals.',
@@ -405,6 +463,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'japanese-keyboard', name: 'Japanese', native: '\u65e5\u672c\u8a9e', dir: 'ltr',
+    langCode: 'ja',
+    keywords: 'japanese keyboard online, hiragana keyboard online, type japanese online, japanese typing',
     title: 'Japanese Keyboard Online \u2013 Type Hiragana (\u3072\u3089\u304c\u306a) Free',
     description: 'Free online Japanese hiragana keyboard with dakuten, handakuten and small kana via Shift. Type Japanese, copy and paste anywhere. No download.',
     tagline: 'Hiragana in goj\u016bon order, with dakuten and small kana on Shift.',
@@ -441,6 +501,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'korean-keyboard', name: 'Korean', native: '\ud55c\uad6d\uc5b4', dir: 'ltr', compose: true,
+    langCode: 'ko',
+    keywords: 'korean keyboard online, hangul keyboard online, type korean online, dubeolsik keyboard',
     title: 'Korean Keyboard Online \u2013 Type Hangul (\ud55c\uae00) Free',
     description: 'Free online Korean keyboard with the 2-set (Dubeolsik) layout and automatic hangul syllable composition. Type Korean, copy and paste anywhere.',
     tagline: '2-set (Dubeolsik) layout with real-time hangul syllable composition.',
@@ -475,6 +537,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'spanish-keyboard', name: 'Spanish', native: 'espa\u00f1ol', dir: 'ltr', autoUpper: true,
+    langCode: 'es',
+    keywords: 'spanish keyboard online, type spanish accents, teclado español online, type enye online',
     title: 'Spanish Keyboard Online \u2013 Type \u00d1 and Accents (\u00e1 \u00e9 \u00ed \u00f3 \u00fa) Free',
     description: 'Free online Spanish keyboard with \u00f1, accented vowels and \u00bf \u00a1. Type Spanish correctly, copy and paste it anywhere. No download or setup needed.',
     tagline: 'The \u00f1, every accented vowel, and \u00bf \u00a1 \u2014 one click each.',
@@ -510,6 +574,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'tamil-keyboard', name: 'Tamil', native: '\u0ba4\u0bae\u0bbf\u0bb4\u0bcd', dir: 'ltr',
+    langCode: 'ta',
+    keywords: 'tamil keyboard online, tamil typing online, type in tamil, தமிழ் விசைப்பலகை, tamil keyboard for pc',
     title: 'Tamil Keyboard Online \u2013 Type in Tamil (\u0ba4\u0bae\u0bbf\u0bb4\u0bcd) Free',
     description: 'Free online Tamil keyboard with all uyir and mei letters plus vowel signs. Type Tamil script, copy and paste it anywhere. No download, mobile friendly.',
     tagline: 'All 12 uyir vowels, 18 mei consonants and every vowel sign.',
@@ -544,6 +610,8 @@ export const KEYBOARDS: KeyboardDef[] = [
   }),
   def({
     slug: 'farsi-keyboard', name: 'Persian', native: '\u0641\u0627\u0631\u0633\u06cc', dir: 'rtl',
+    langCode: 'fa',
+    keywords: 'persian keyboard online, farsi keyboard online, type farsi online, کیبورد فارسی, persian keyboard for pc',
     title: 'Persian Keyboard Online \u2013 Type Farsi (\u0641\u0627\u0631\u0633\u06cc) Free',
     description: 'Free online Persian (Farsi) keyboard with \u067e \u0686 \u0698 \u06af and the standard Iranian layout. Type Farsi right-to-left, copy and paste anywhere.',
     tagline: 'The standard Iranian layout with \u067e \u0686 \u0698 \u06af where they belong.',

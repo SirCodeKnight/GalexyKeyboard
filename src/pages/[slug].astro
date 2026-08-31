@@ -50,33 +50,10 @@ const jsonld = [
   },
 ];
 ---
-<Base title={kb.title} description={kb.description} jsonld={jsonld}>
-  <div class="max-w-[1536px] mx-auto px-4 sm:px-6 py-6 grid xl:grid-cols-12 gap-8 items-start">
-    <!-- Left Column (Ads + Sticker) -->
-    <div class="xl:col-span-2 hidden xl:flex flex-col gap-6 sticky top-20">
-      <div class="ad-banner-vertical text-center border-dashed">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-ink/40 mb-2 block">Advertisement</span>
-        <script is:inline type="text/javascript">
-          atOptions = {
-            'key' : '6db6300f8fd56b352bb39f63f1c3337e',
-            'format' : 'iframe',
-            'height' : 600,
-            'width' : 160,
-            'params' : {}
-          };
-        </script>
-        <script is:inline type="text/javascript" src="//www.highperformanceformat.com/6db6300f8fd56b352bb39f63f1c3337e/invoke.js"></script>
-      </div>
-      
-      {/* Meme Sticker */}
-      <div class="meme-sticker-card p-3 bg-white rounded-2xl border border-ink/10 shadow-sm relative overflow-hidden group hover:shadow-md transition">
-        <div class="text-[10px] font-bold text-ink/40 uppercase mb-2">Local Vibe Sticker</div>
-        <img src={`${base}/memes/${customMemes.includes(kb.slug) ? kb.slug : 'typing-meme'}.png`} alt={`Funny ${kb.name} meme`} class="w-full h-auto rounded-lg object-contain bg-slate-50 border border-slate-100 group-hover:scale-105 transition-transform duration-300" />
-      </div>
-    </div>
-
-    <!-- Middle Column (Main Tool & Info) -->
-    <div class="xl:col-span-7 col-span-12 space-y-6">
+<Base title={kb.title} description={kb.description} jsonld={jsonld} lang={kb.langCode || 'en'} keywords={kb.keywords}>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 grid lg:grid-cols-12 gap-8 items-start">
+    <!-- Main Tool & Info Column -->
+    <div class="lg:col-span-8 col-span-12 space-y-6">
       <nav class="text-sm text-ink/60" aria-label="Breadcrumb">
         <a href={`${base}/`} class="hover:text-brassdark">All keyboards</a>
         <span aria-hidden="true"> / </span>
@@ -215,8 +192,8 @@ const jsonld = [
       </section>
     </div>
 
-    <!-- Right Column (Ads + Sidebar + stickers) -->
-    <div class="xl:col-span-3 col-span-12 space-y-6">
+    <!-- Right Sidebar -->
+    <div class="lg:col-span-4 col-span-12 space-y-6 sticky top-20">
       <aside class="space-y-6">
         <div class="bg-white p-5 rounded-2xl border border-ink/10 shadow-sm">
           <h2 class="font-display text-xl">More keyboards</h2>
@@ -236,25 +213,10 @@ const jsonld = [
           <a href={`${base}/#keyboards`} class="mt-4 inline-block text-sm text-brassdark hover:underline">See all language keyboards</a>
         </div>
 
-        {/* Right Ad space */}
-        <div class="ad-banner-vertical text-center border-dashed !h-[300px] sticky-none">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-ink/40 mb-2 block">Advertisement</span>
-          <script is:inline type="text/javascript">
-            atOptions = {
-              'key' : '5de610de0ee8fc6785ee1b55e3579fb1',
-              'format' : 'iframe',
-              'height' : 250,
-              'width' : 300,
-              'params' : {}
-            };
-          </script>
-          <script is:inline type="text/javascript" src="//www.highperformanceformat.com/5de610de0ee8fc6785ee1b55e3579fb1/invoke.js"></script>
-        </div>
-
-        {/* Right Sticker */}
+        {/* Meme Sticker */}
         <div class="meme-sticker-card p-3 bg-white rounded-2xl border border-ink/10 shadow-sm relative overflow-hidden group hover:shadow-md transition">
-          <div class="text-[10px] font-bold text-ink/40 uppercase mb-2">Fun Sticker</div>
-          <img src={`${base}/memes/typing-meme.png`} alt="Funny typing meme" class="w-full h-auto rounded-lg object-contain bg-slate-50 border border-slate-100 group-hover:scale-105 transition-transform duration-300" />
+          <div class="text-[10px] font-bold text-ink/40 uppercase mb-2">Local Vibe Sticker</div>
+          <img src={`${base}/memes/${customMemes.includes(kb.slug) ? kb.slug : 'typing-meme'}.png`} alt={`Funny ${kb.name} meme`} class="w-full h-auto rounded-lg object-contain bg-slate-50 border border-slate-100 group-hover:scale-105 transition-transform duration-300" />
         </div>
       </aside>
     </div>
