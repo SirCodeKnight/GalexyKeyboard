@@ -14,7 +14,6 @@ const idx = KEYBOARDS.findIndex((k) => k.slug === kb.slug);
 const others = KEYBOARDS.filter((k) => k.slug !== kb.slug);
 const related = [...others.slice(idx), ...others.slice(0, idx)].slice(0, 6);
 
-const customMemes = ['hindi-keyboard', 'spanish-keyboard'];
 const scriptRange = {
   'hindi-keyboard': 'U+0900–U+097F Devanagari',
   'arabic-keyboard': 'U+0600–U+06FF Arabic',
@@ -310,11 +309,6 @@ const jsonld = [
           <a href={`${base}/#keyboards`} class="mt-4 inline-block text-sm text-brassdark hover:underline">See all language keyboards</a>
         </div>
 
-        {/* Meme Sticker */}
-        <div class="meme-sticker-card p-3 bg-white rounded-2xl border border-ink/10 shadow-sm relative overflow-hidden group hover:shadow-md transition">
-          <div class="text-[10px] font-bold text-ink/40 uppercase mb-2">Local Vibe Sticker</div>
-          <img src={`${base}/memes/${customMemes.includes(kb.slug) ? kb.slug : 'typing-meme'}.png`} alt={`Funny ${kb.name} meme`} class="w-full h-auto rounded-lg object-contain bg-slate-50 border border-slate-100 group-hover:scale-105 transition-transform duration-300" />
-        </div>
       </aside>
     </div>
   </div>

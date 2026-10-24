@@ -88,8 +88,8 @@ const currentKeyboard = KEYBOARDS.find((keyboard) => currentPath === `${base}/${
 
     <div class="flag-marquee-container border-b border-ink/5 bg-cream/30 py-2.5 overflow-hidden relative w-full select-none shadow-[inset_0_-2px_4px_rgba(0,0,0,0.02)] z-10" style={embed ? 'display:none' : undefined}>
       <div class="flag-marquee-content flex gap-8 whitespace-nowrap animate-marquee">
-        {[...KEYBOARDS, ...KEYBOARDS].map((k) => (
-          <a href={`${base}/${k.slug}/`} class="inline-flex items-center gap-2 hover:scale-105 transition-transform duration-200 group">
+        {[...KEYBOARDS, ...KEYBOARDS].map((k, index) => (
+          <a href={`${base}/${k.slug}/`} aria-hidden={index >= KEYBOARDS.length ? 'true' : undefined} tabindex={index >= KEYBOARDS.length ? -1 : undefined} class="inline-flex items-center gap-2 hover:scale-105 transition-transform duration-200 group">
             <img src={`https://flagcdn.com/w40/${k.countryCode}.png`} width="40" height="20" decoding="async" class="w-5 h-3.5 rounded-[2px] object-cover shadow-sm border border-ink/10" alt={k.name} loading="lazy" />
             <span class="text-xs font-semibold tracking-wider text-ink/75 group-hover:text-brassdark">{k.name}</span>
           </a>
