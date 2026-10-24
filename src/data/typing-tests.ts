@@ -13,11 +13,11 @@ const make = (slug: string, name: string, langCode: string, passages: string[]):
   langCode,
   passages,
   title: `${name} Typing Test – WPM, Accuracy and Exam Practice`,
-  description: `Practise ${name} typing with a timed browser test. Measure gross WPM, net WPM, accuracy and errors without creating an account.`,
+  description: `Practice ${name} typing online with a timed browser test, real-time mistake highlighting, optional typing sounds, gross WPM, net WPM and accuracy without creating an account.`,
 });
 
 export const TYPING_TESTS: TypingTestDef[] = [
-  { slug: 'typing-test', name: 'Multilingual', langCode: 'en', title: 'Free Typing Speed Test – WPM and Accuracy', description: 'Measure typing speed, accuracy, errors and net WPM with a privacy-friendly browser typing test.', passages: ['Typing practice becomes useful when the passage is clear, the timer is visible and the result is easy to understand.'] },
+  { slug: 'typing-test', name: 'Multilingual', langCode: 'en', title: 'Free Typing Speed Test – WPM, Accuracy and Mistake Highlighting', description: 'Practice typing online with real-time red and green mistake highlighting, optional key sounds, WPM, accuracy and net speed in a privacy-friendly browser test.', passages: ['Typing practice becomes useful when the passage is clear, the timer is visible and the result is easy to understand.'] },
   make('hindi-typing-test', 'Hindi', 'hi', ['नियमित अभ्यास से हिंदी टाइपिंग की गति और सटीकता दोनों बेहतर होती हैं।', 'किसी भी परीक्षा में सही वर्तनी और स्थिर गति महत्वपूर्ण होती है।']),
   make('assamese-typing-test', 'Assamese', 'as', ['নিয়মিত অনুশীলনে অসমীয়া টাইপিঙৰ গতি আৰু সঠিকতা বৃদ্ধি পায়।']),
   make('bengali-typing-test', 'Bengali', 'bn', ['নিয়মিত অনুশীলন করলে বাংলা টাইপিংয়ের গতি ও নির্ভুলতা দুটোই বাড়ে।']),

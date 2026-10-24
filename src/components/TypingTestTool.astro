@@ -5,71 +5,302 @@ interface Props { test: TypingTestDef }
 const { test } = Astro.props;
 ---
 
-<section class="typing-test-tool rounded-2xl border border-ink/10 bg-white p-4 shadow-card sm:p-6" data-test={JSON.stringify(test)}>
-  <div class="flex flex-wrap items-baseline justify-between gap-3"><div><h2 class="font-display text-2xl">Timed {test.name} typing test</h2><p class="mt-1 text-sm text-ink/65">Start typing in the box. The timer begins with your first character.</p></div><span data-status class="text-xs text-sage" role="status" aria-live="polite">Ready</span></div>
-  <div class="mt-4 grid gap-3 sm:grid-cols-3"><label class="text-sm font-semibold">Duration<select data-duration class="mt-1 block w-full rounded-lg border border-ink/15 bg-cream/60 px-3 py-2 font-normal"><option value="60">1 minute</option><option value="120">2 minutes</option><option value="300">5 minutes</option><option value="600">10 minutes</option><option value="900">15 minutes</option></select></label><label class="text-sm font-semibold">Passage<select data-passage class="mt-1 block w-full rounded-lg border border-ink/15 bg-cream/60 px-3 py-2 font-normal">{test.passages.map((_, index) => <option value={index}>Passage {index + 1}</option>)}</select></label><label class="flex items-end gap-2 rounded-lg border border-ink/10 px-3 py-2 text-sm font-semibold"><input type="checkbox" data-lock class="accent-brassdark" /> Exam mode: lock Backspace</label></div>
-  <div data-target class="mt-4 rounded-xl border border-ink/10 bg-cream/70 p-4 text-lg leading-relaxed" lang={test.langCode} dir="auto">{test.passages[0]}</div>
-  <textarea data-input class="mt-4 min-h-[150px] w-full resize-y rounded-xl border border-ink/15 bg-white p-4 text-lg leading-relaxed focus:border-brass focus:outline-none focus:ring-2 focus:ring-brass/50" lang={test.langCode} dir="auto" placeholder="Type the passage here…" spellcheck="false"></textarea>
-  <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5"><div class="rounded-xl bg-cream/70 p-3"><span class="block text-xs uppercase tracking-wide text-ink/55">Time</span><strong data-time class="text-2xl">01:00</strong></div><div class="rounded-xl bg-cream/70 p-3"><span class="block text-xs uppercase tracking-wide text-ink/55">Gross WPM</span><strong data-gross class="text-2xl">0</strong></div><div class="rounded-xl bg-cream/70 p-3"><span class="block text-xs uppercase tracking-wide text-ink/55">Net WPM</span><strong data-net class="text-2xl">0</strong></div><div class="rounded-xl bg-cream/70 p-3"><span class="block text-xs uppercase tracking-wide text-ink/55">Accuracy</span><strong data-accuracy class="text-2xl">100%</strong></div><div class="rounded-xl bg-cream/70 p-3"><span class="block text-xs uppercase tracking-wide text-ink/55">Errors</span><strong data-errors class="text-2xl">0</strong></div></div>
-  <div class="mt-4 flex flex-wrap gap-2"><button type="button" data-reset class="rounded-lg bg-night px-4 py-2 text-sm font-semibold text-paper">Reset test</button><button type="button" data-certificate class="rounded-lg border border-ink/15 px-4 py-2 text-sm font-semibold hover:border-brass">Print certificate</button></div>
+<section class="typing-test-tool rounded-3xl border border-ink/10 bg-white p-4 shadow-card sm:p-6 lg:p-7" data-test={JSON.stringify(test)}>
+  <div class="flex flex-col gap-4 border-b border-ink/10 pb-5 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <div class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brassdark">
+        <span class="rounded-full bg-brass/15 px-3 py-1">Timed practice</span>
+        <span class="text-ink/45">{test.name}</span>
+      </div>
+      <h2 class="mt-3 font-display text-2xl tracking-tight sm:text-3xl">{test.name} typing speed test</h2>
+      <p class="mt-2 max-w-2xl text-sm leading-relaxed text-ink/65">Type the highlighted passage as accurately as possible. The timer starts with your first character, and every mismatch is shown immediately.</p>
+    </div>
+    <div class="flex items-center gap-2 self-start rounded-full border border-ink/10 bg-cream/70 px-3 py-2 text-xs font-semibold text-ink/70" data-status-wrap>
+      <span class="h-2 w-2 rounded-full bg-sage" data-status-dot aria-hidden="true"></span>
+      <span data-status role="status" aria-live="polite">Ready when you are.</span>
+    </div>
+  </div>
+
+  <div class="mt-5 grid gap-3 rounded-2xl border border-ink/10 bg-cream/55 p-3 sm:grid-cols-2 lg:grid-cols-4">
+    <label class="text-xs font-bold uppercase tracking-wide text-ink/60">Duration
+      <select data-duration class="mt-1.5 block min-h-11 w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm font-semibold text-ink shadow-sm focus:border-brass focus:outline-none focus:ring-2 focus:ring-brass/40">
+        <option value="60">1 minute</option>
+        <option value="120">2 minutes</option>
+        <option value="300">5 minutes</option>
+        <option value="600">10 minutes</option>
+        <option value="900">15 minutes</option>
+      </select>
+    </label>
+    <label class="text-xs font-bold uppercase tracking-wide text-ink/60">Passage
+      <select data-passage class="mt-1.5 block min-h-11 w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm font-semibold text-ink shadow-sm focus:border-brass focus:outline-none focus:ring-2 focus:ring-brass/40">
+        {test.passages.map((_, index) => <option value={index}>Passage {index + 1}</option>)}
+      </select>
+    </label>
+    <label class="flex min-h-11 items-center gap-2 rounded-xl border border-ink/10 bg-white px-3 py-2 text-sm font-semibold text-ink shadow-sm">
+      <input type="checkbox" data-lock class="h-4 w-4 accent-brassdark" />
+      <span><span class="block">Exam mode</span><span class="block text-xs font-normal text-ink/55">Lock Backspace</span></span>
+    </label>
+    <button type="button" data-sound aria-pressed="false" class="min-h-11 rounded-xl border border-ink/10 bg-white px-3 py-2 text-left text-sm font-semibold text-ink shadow-sm transition hover:border-brass focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brassdark">
+      <span class="block" data-sound-label>Typing sound: Off</span>
+      <span class="block text-xs font-normal text-ink/55">Optional key feedback</span>
+    </button>
+  </div>
+
+  <div class="mt-6 flex items-center justify-between gap-3 text-xs font-semibold text-ink/60">
+    <span>Passage progress</span>
+    <span data-progress-label>0%</span>
+  </div>
+  <div class="mt-2 h-2 overflow-hidden rounded-full bg-ink/10" role="progressbar" aria-label="Typing passage progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-progress-bar-wrap>
+    <div data-progress-bar class="h-full w-0 rounded-full bg-gradient-to-r from-brass to-brassdark transition-[width] duration-200"></div>
+  </div>
+
+  <div class="mt-5 rounded-2xl border border-ink/10 bg-night/[0.03] p-2 sm:p-3">
+    <div class="mb-2 flex flex-wrap items-center justify-between gap-2 px-2 text-xs text-ink/55 sm:px-3">
+      <span class="font-semibold uppercase tracking-wide">Type the highlighted passage</span>
+      <span>Green = correct · red = mismatch · grey = remaining</span>
+    </div>
+    <div class="typing-input-shell relative overflow-hidden rounded-xl border border-ink/15 bg-white shadow-inner" data-input-shell>
+      <div data-target-overlay class="typing-target-overlay pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words p-4 text-lg leading-relaxed sm:p-5 sm:text-xl" aria-hidden="true"></div>
+      <textarea data-input class="relative z-10 min-h-[170px] w-full resize-y rounded-xl bg-transparent p-4 text-lg leading-relaxed text-ink outline-none focus:ring-2 focus:ring-brass/45 sm:min-h-[190px] sm:p-5 sm:text-xl" lang={test.langCode} dir="auto" placeholder="Click here and start typing…" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label={`Type the ${test.name} passage`}></textarea>
+    </div>
+  </div>
+
+  <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-5">
+    <div class="rounded-2xl border border-ink/10 bg-cream/65 p-3 sm:p-4"><span class="block text-[11px] font-bold uppercase tracking-[0.14em] text-ink/50">Time</span><strong data-time class="mt-1 block text-2xl tracking-tight text-ink sm:text-3xl">01:00</strong></div>
+    <div class="rounded-2xl border border-ink/10 bg-cream/65 p-3 sm:p-4"><span class="block text-[11px] font-bold uppercase tracking-[0.14em] text-ink/50">Gross WPM</span><strong data-gross class="mt-1 block text-2xl tracking-tight text-ink sm:text-3xl">0</strong></div>
+    <div class="rounded-2xl border border-ink/10 bg-cream/65 p-3 sm:p-4"><span class="block text-[11px] font-bold uppercase tracking-[0.14em] text-ink/50">Net WPM</span><strong data-net class="mt-1 block text-2xl tracking-tight text-ink sm:text-3xl">0</strong></div>
+    <div class="rounded-2xl border border-ink/10 bg-cream/65 p-3 sm:p-4"><span class="block text-[11px] font-bold uppercase tracking-[0.14em] text-ink/50">Accuracy</span><strong data-accuracy class="mt-1 block text-2xl tracking-tight text-emerald-700 sm:text-3xl">100%</strong></div>
+    <div class="rounded-2xl border border-ink/10 bg-cream/65 p-3 sm:p-4"><span class="block text-[11px] font-bold uppercase tracking-[0.14em] text-ink/50">Mistakes</span><strong data-errors class="mt-1 block text-2xl tracking-tight text-ink sm:text-3xl">0</strong></div>
+  </div>
+
+  <div class="mt-5 flex flex-wrap items-center gap-3">
+    <button type="button" data-reset class="min-h-11 rounded-xl bg-night px-5 py-2.5 text-sm font-bold text-paper shadow-sm transition hover:bg-slateblue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brassdark">Reset test</button>
+    <button type="button" data-certificate class="min-h-11 rounded-xl border border-ink/15 bg-white px-5 py-2.5 text-sm font-bold text-ink shadow-sm transition hover:border-brass focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brassdark">Print certificate</button>
+    <span class="text-xs text-ink/55">Your text stays in this browser.</span>
+  </div>
 </section>
+
+<style is:global>
+  .typing-test-tool.is-enhanced [data-input] {
+    color: transparent;
+    caret-color: #101820;
+    text-shadow: none;
+    -webkit-text-fill-color: transparent;
+  }
+  .typing-target-overlay .typing-char { border-radius: 0.18rem; }
+  .typing-target-overlay .typing-char-correct { color: #047857; background: rgba(16, 185, 129, 0.09); }
+  .typing-target-overlay .typing-char-wrong { color: #b91c1c; background: rgba(239, 68, 68, 0.14); text-decoration: underline wavy #dc2626 2px; text-underline-offset: 4px; }
+  .typing-target-overlay .typing-char-current { border-bottom: 2px solid #b9852e; background: rgba(185, 133, 46, 0.14); }
+  .typing-target-overlay .typing-char-remaining { color: rgba(16, 24, 32, 0.42); }
+  .typing-target-overlay .typing-char-extra { color: #b91c1c; background: rgba(239, 68, 68, 0.14); text-decoration: underline wavy #dc2626 2px; text-underline-offset: 4px; }
+  @media (prefers-reduced-motion: reduce) {
+    .typing-test-tool .transition-\[width\] { transition: none !important; }
+  }
+</style>
+
+<!-- client behavior is kept below the static markup so the page remains useful before hydration -->
 
 <script>
   interface TestData { name: string; langCode: string; passages: string[] }
+
   const formatTime = (seconds: number) => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
-  const init = (root: HTMLElement) => {
+
+  function initTypingTest(root: HTMLElement) {
     const data = JSON.parse(root.dataset.test || '{}') as TestData;
-    const target = root.querySelector<HTMLElement>('[data-target]')!;
+    const target = root.querySelector<HTMLElement>('[data-target-overlay]')!;
     const input = root.querySelector<HTMLTextAreaElement>('[data-input]')!;
     const duration = root.querySelector<HTMLSelectElement>('[data-duration]')!;
     const passage = root.querySelector<HTMLSelectElement>('[data-passage]')!;
     const lock = root.querySelector<HTMLInputElement>('[data-lock]')!;
+    const sound = root.querySelector<HTMLButtonElement>('[data-sound]')!;
+    const soundLabel = root.querySelector<HTMLElement>('[data-sound-label]')!;
     const time = root.querySelector<HTMLElement>('[data-time]')!;
     const gross = root.querySelector<HTMLElement>('[data-gross]')!;
     const net = root.querySelector<HTMLElement>('[data-net]')!;
     const accuracy = root.querySelector<HTMLElement>('[data-accuracy]')!;
     const errors = root.querySelector<HTMLElement>('[data-errors]')!;
     const status = root.querySelector<HTMLElement>('[data-status]')!;
+    const statusDot = root.querySelector<HTMLElement>('[data-status-dot]')!;
+    const progressLabel = root.querySelector<HTMLElement>('[data-progress-label]')!;
+    const progressBar = root.querySelector<HTMLElement>('[data-progress-bar]')!;
+    const progressWrap = root.querySelector<HTMLElement>('[data-progress-bar-wrap]')!;
     let remaining = Number(duration.value);
     let timer: number | undefined;
     let started = false;
     let finished = false;
+    let startedAt = 0;
+    let soundEnabled = false;
+    let lastValue = '';
+    let audioContext: AudioContext | undefined;
 
     const currentTarget = () => data.passages[Number(passage.value)] ?? data.passages[0] ?? '';
-    const updateMetrics = () => {
+
+    const setStatus = (message: string, tone: 'ready' | 'active' | 'error' | 'done' = 'ready') => {
+      status.textContent = message;
+      statusDot.classList.remove('bg-sage', 'bg-brass', 'bg-red-500', 'bg-emerald-600');
+      statusDot.classList.add(tone === 'error' ? 'bg-red-500' : tone === 'active' ? 'bg-brass' : tone === 'done' ? 'bg-emerald-600' : 'bg-sage');
+    };
+
+    const renderTarget = () => {
+      const passageText = currentTarget();
+      const typed = input.value;
+      const fragment = document.createDocumentFragment();
+      const length = Math.max(passageText.length, typed.length);
+      for (let index = 0; index < length; index += 1) {
+        const character = passageText[index] ?? typed[index] ?? '';
+        const span = document.createElement('span');
+        span.className = 'typing-char';
+        if (index >= passageText.length) span.classList.add('typing-char-extra');
+        else if (index >= typed.length) span.classList.add(index === typed.length ? 'typing-char-current' : 'typing-char-remaining');
+        else if (typed[index] === passageText[index]) span.classList.add('typing-char-correct');
+        else span.classList.add('typing-char-wrong');
+        span.textContent = character === ' ' ? '\u00a0' : character;
+        fragment.append(span);
+      }
+      target.replaceChildren(fragment);
+      target.scrollTop = input.scrollTop;
+      target.scrollLeft = input.scrollLeft;
+    };
+
+    const updateMetrics = (allowFinish = true) => {
       const value = input.value;
       const passageText = currentTarget();
       let correct = 0;
-      for (let i = 0; i < value.length; i += 1) if (value[i] === passageText[i]) correct += 1;
-      const mistakeCount = Math.max(0, value.length - correct);
-      const elapsed = Math.max(1, Number(duration.value) - remaining);
-      const minutes = elapsed / 60;
-      const grossValue = Math.round((value.length / 5 / minutes) * 10) / 10;
-      const netValue = Math.max(0, Math.round((correct / 5 / minutes) * 10) / 10);
+      let mistakeCount = 0;
+      const comparedLength = Math.max(value.length, passageText.length);
+      for (let index = 0; index < comparedLength; index += 1) {
+        if (index < value.length && index < passageText.length && value[index] === passageText[index]) correct += 1;
+        else if (index < value.length) mistakeCount += 1;
+      }
+
+      const elapsedSeconds = startedAt ? Math.max(0.1, (performance.now() - startedAt) / 1000) : 0;
+      const minutes = elapsedSeconds / 60;
+      const grossValue = value.length && minutes > 0 ? Math.round((value.length / 5 / minutes) * 10) / 10 : 0;
+      const netValue = correct && minutes > 0 ? Math.max(0, Math.round((correct / 5 / minutes) * 10) / 10) : 0;
       const accuracyValue = value.length ? Math.round((correct / value.length) * 100) : 100;
+      const progress = passageText.length ? Math.min(100, Math.round((value.length / passageText.length) * 100)) : 0;
+
       gross.textContent = String(grossValue);
       net.textContent = String(netValue);
       accuracy.textContent = `${accuracyValue}%`;
       errors.textContent = String(mistakeCount);
-      if (value.length >= passageText.length) finish();
+      errors.classList.toggle('text-red-700', mistakeCount > 0);
+      errors.classList.toggle('text-ink', mistakeCount === 0);
+      accuracy.classList.toggle('text-red-700', accuracyValue < 90);
+      accuracy.classList.toggle('text-emerald-700', accuracyValue >= 90);
+      progressLabel.textContent = `${progress}%`;
+      progressBar.style.width = `${progress}%`;
+      progressWrap.setAttribute('aria-valuenow', String(progress));
+      renderTarget();
+
+      if (!finished) {
+        if (mistakeCount > 0) setStatus(`${mistakeCount} ${mistakeCount === 1 ? 'mismatch' : 'mismatches'} — keep going`, 'error');
+        else if (value) setStatus('Great accuracy — keep going.', 'active');
+        else setStatus('Ready when you are.', 'ready');
+      }
+      if (allowFinish && passageText.length > 0 && value.length >= passageText.length) finish();
     };
+
     const finish = () => {
       if (finished) return;
-      finished = true; started = false;
+      finished = true;
+      started = false;
       if (timer) window.clearInterval(timer);
       input.disabled = true;
-      status.textContent = 'Test complete. Review your result or print a certificate.';
-      updateMetrics();
+      updateMetrics(false);
+      setStatus('Test complete — review your result or print a certificate.', 'done');
     };
-    const tick = () => { remaining -= 1; time.textContent = formatTime(remaining); updateMetrics(); if (remaining <= 0) finish(); };
-    const start = () => { if (started || finished) return; started = true; status.textContent = 'Timer running.'; timer = window.setInterval(tick, 1000); };
-    const reset = () => { if (timer) window.clearInterval(timer); remaining = Number(duration.value); started = false; finished = false; input.disabled = false; input.value = ''; time.textContent = formatTime(remaining); gross.textContent = '0'; net.textContent = '0'; accuracy.textContent = '100%'; errors.textContent = '0'; status.textContent = 'Ready'; input.focus(); };
-    const setPassage = () => { target.textContent = currentTarget(); target.setAttribute('lang', data.langCode); reset(); };
-    duration.addEventListener('change', reset); passage.addEventListener('change', setPassage); input.addEventListener('input', () => { start(); updateMetrics(); });
-    input.addEventListener('keydown', (event) => { if (lock.checked && event.key === 'Backspace') event.preventDefault(); });
+
+    const tick = () => {
+      remaining = Math.max(0, remaining - 1);
+      time.textContent = formatTime(remaining);
+      updateMetrics(false);
+      if (remaining <= 0) finish();
+    };
+
+    const start = () => {
+      if (started || finished) return;
+      started = true;
+      startedAt = performance.now();
+      setStatus('Timer running — stay accurate.', 'active');
+      timer = window.setInterval(tick, 1000);
+    };
+
+    const reset = () => {
+      if (timer) window.clearInterval(timer);
+      remaining = Number(duration.value);
+      started = false;
+      finished = false;
+      startedAt = 0;
+      input.disabled = false;
+      input.value = '';
+      lastValue = '';
+      time.textContent = formatTime(remaining);
+      setStatus('Ready when you are.', 'ready');
+      updateMetrics(false);
+    };
+
+    const setPassage = () => {
+      input.lang = data.langCode;
+      reset();
+    };
+
+    const playKeySound = (correct: boolean) => {
+      if (!soundEnabled) return;
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioContextClass) return;
+      audioContext ??= new AudioContextClass();
+      if (audioContext.state === 'suspended') void audioContext.resume();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = correct ? 'sine' : 'square';
+      oscillator.frequency.value = correct ? 520 : 170;
+      gain.gain.setValueAtTime(0.025, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.055);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.06);
+    };
+
+    sound.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      sound.setAttribute('aria-pressed', String(soundEnabled));
+      soundLabel.textContent = `Typing sound: ${soundEnabled ? 'On' : 'Off'}`;
+      setStatus(soundEnabled ? 'Typing sound enabled.' : 'Typing sound disabled.', 'ready');
+      if (soundEnabled) playKeySound(true);
+    });
+    duration.addEventListener('change', reset);
+    passage.addEventListener('change', setPassage);
+    input.addEventListener('input', () => {
+      const value = input.value;
+      if (value.length > lastValue.length) {
+        const index = Math.max(0, value.length - 1);
+        playKeySound(value[index] === currentTarget()[index]);
+      }
+      lastValue = value;
+      start();
+      updateMetrics();
+    });
+    input.addEventListener('scroll', () => { target.scrollTop = input.scrollTop; target.scrollLeft = input.scrollLeft; });
+    input.addEventListener('keydown', (event) => {
+      if (lock.checked && event.key === 'Backspace') {
+        event.preventDefault();
+        setStatus('Exam mode is locking Backspace.', 'error');
+      }
+    });
     root.querySelector('[data-reset]')!.addEventListener('click', reset);
-    root.querySelector('[data-certificate]')!.addEventListener('click', () => { const popup = window.open('', '_blank', 'noopener,noreferrer,width=760,height=540'); if (!popup) { status.textContent = 'Allow pop-ups to print the certificate.'; return; } popup.document.write(`<title>${data.name} typing certificate</title><style>body{font-family:system-ui;padding:48px;text-align:center}main{border:8px double #b9852e;padding:48px}h1{font-family:Georgia;font-size:40px}strong{font-size:32px}</style><main><h1>GalexyKeyboard</h1><p>Typing practice certificate</p><h2>${data.name} typing test</h2><p>Gross WPM: <strong>${gross.textContent}</strong></p><p>Net WPM: <strong>${net.textContent}</strong></p><p>Accuracy: <strong>${accuracy.textContent}</strong></p><p>Errors: <strong>${errors.textContent}</strong></p><p>Generated locally in the browser.</p></main>`); popup.document.close(); popup.focus(); popup.print(); });
+    root.querySelector('[data-certificate]')!.addEventListener('click', () => {
+      const popup = window.open('', '_blank', 'noopener,noreferrer,width=760,height=540');
+      if (!popup) { setStatus('Allow pop-ups to print the certificate.', 'error'); return; }
+      popup.document.write(`<title>${data.name} typing certificate</title><style>body{font-family:system-ui;padding:48px;text-align:center;color:#101820}main{border:8px double #b9852e;padding:48px}h1{font-family:Georgia;font-size:40px}strong{font-size:32px}</style><main><h1>GalexyKeyboard</h1><p>Typing practice certificate</p><h2>${data.name} typing test</h2><p>Gross WPM: <strong>${gross.textContent}</strong></p><p>Net WPM: <strong>${net.textContent}</strong></p><p>Accuracy: <strong>${accuracy.textContent}</strong></p><p>Mistakes: <strong>${errors.textContent}</strong></p><p>Generated locally in the browser.</p></main>`);
+      popup.document.close();
+      popup.focus();
+      popup.print();
+    });
+
+    root.classList.add('is-enhanced');
     reset();
-  };
-  document.querySelectorAll<HTMLElement>('.typing-test-tool').forEach(init);
+  }
+
+  document.querySelectorAll<HTMLElement>('.typing-test-tool').forEach(initTypingTest);
 </script>
