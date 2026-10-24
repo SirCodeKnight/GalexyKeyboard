@@ -84,6 +84,18 @@ const baseFaqs = (name: string): Faq[] => [
     a: `Yes. Type your ${name} text, then choose Download .txt to save a UTF-8 plain-text file locally in your browser.`,
   },
   {
+    q: `Does the ${name} keyboard preserve Unicode normalization?`,
+    a: `The tool inserts Unicode characters directly and keeps the text in the browser. Copy and download preserve the characters you entered; combining marks remain available for scripts that use them.`,
+  },
+  {
+    q: `Can I mix ${name} with English, numbers and punctuation?`,
+    a: `Yes. The text area accepts mixed-language text, numbers, emoji and punctuation. The browser keeps the correct text direction for ${name} while allowing Latin text in the same draft.`,
+  },
+  {
+    q: `Can I use the ${name} keyboard with screen readers or only a mouse?`,
+    a: `The editor is a normal labelled text area and the on-screen keys are keyboard-focusable buttons. You can type, navigate, copy and download without relying only on a mouse.`,
+  },
+  {
     q: `Is this a ${name} translator or transliteration tool?`,
     a: `No. This is a keyboard tool, not an automatic translator or phonetic transliterator. It inserts the characters you choose so you control the exact Unicode text.`,
   },

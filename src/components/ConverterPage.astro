@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+import ConverterTool from './ConverterTool.astro';
+import type { ConverterDef } from '../data/converters';
+
+interface Props {
+  converter: ConverterDef;
+  options?: readonly ConverterDef[];
+}
+
+const { converter, options = [] } = Astro.props;
+const site = (Astro.site?.href ?? 'https://wowgalexy.in').replace(/\/+$/, '');
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const pageUrl = `${site}${base}/${converter.slug}/`;
+const isHub = converter.direction === 'hub';
+const faqs = [
+  { q: `What does the ${converter.name} do?`, a: converter.description },
+  { q: 'Is the conversion private?', a: 'Yes. The converter is a static browser tool. Text is processed in the current tab and is not submitted to a GalexyKeyboard server.' },
+  { q: 'Can I convert mixed English and numbers?', a: 'Yes. Latin words, numbers, whitespace and punctuation are preserved when they are not part of the selected mapping table.' },
+  { q: 'Does it support Unicode normalization?', a: 'Yes. The local engine normalizes Unicode output to NFC before it is displayed or downloaded.' },
+  { q: 'Can I reverse the conversion?', a: isHub ? 'Dedicated reverse routes are available for the supported bidirectional packs. Use Swap direction in the tool when the selected mapping includes a reverse table.' : converter.direction === 'unicode-to-legacy' ? 'Yes. This page starts in Unicode to legacy mode and includes the reverse mapping controls.' : 'Use the matching Unicode-to-legacy page in the related links when you need a legacy DTP export.' },
+  { q: 'Can I download the result?', a: 'Yes. Choose Download .txt to save a UTF-8 plain-text file locally.' },
+  { q: 'What if a character is not in the mapping?', a: 'Unsupported characters are preserved visibly so you can review them instead of losing text silently.' },
+  { q: 'Can I use this on mobile?', a: 'Yes. The editor works in current Android and iOS browsers and uses the device file picker only when you choose to open a local text file.' },
+  { q: 'Does this convert fonts inside a DOCX or PDF automatically?', a: 'This static version works on pasted text and plain-text files. Open the original document in its editor, copy the legacy text, convert it here, then paste the Unicode result back.' },
+  { q: 'Why should I keep the original legacy document?', a: 'Legacy font encodings vary by release. Keeping the source lets you compare rare glyphs or corrections before publishing the Unicode result.' },
+  { q: 'Which scripts are covered?', a: `${converter.script} is the primary script for this route. The hub links to Hindi, Assamese, Bengali, Nepali, Tamil, Gujarati, Punjabi, Kannada, Malayalam, Odia, Vietnamese, Urdu, Myanmar and Khmer workflows.` },
+  { q: 'Where can I report a mapping issue?', a: 'Use the GalexyKeyboard contact page and include the font name, font version if known, a short source sample and the expected Unicode text.' },
+];
+const jsonld = [
+  { '@context': 'https://schema.org', '@type': 'WebApplication', name: converter.name, url: pageUrl, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any (web browser)', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, description: converter.description },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((faq) => ({ '@type': 'Question', name: faq.q, acceptedAnswer: { '@type': 'Answer', text: faq.a } })) },
+  { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'GalexyKeyboard', item: `${site}${base}/` }, { '@type': 'ListItem', position: 2, name: 'Font converters', item: `${site}${base}/font-converter/` }, { '@type': 'ListItem', position: 3, name: converter.name, item: pageUrl }] },
+];
+---
+
+<Base title={converter.title} description={converter.description} jsonld={jsonld} keywords={`${converter.name}, ${converter.family}, legacy font to Unicode, Unicode converter`}>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
+    <nav class="text-sm text-ink/60" aria-label="Breadcrumb"><a href={`${base}/`} class="hover:text-brassdark">Home</a><span aria-hidden="true"> / </span><a href={`${base}/font-converter/`} class="hover:text-brassdark">Font converters</a><span aria-hidden="true"> / </span><span class="text-ink">{converter.name}</span></nav>
+    <header class="mt-6 max-w-4xl">
+      <p class="text-sm font-semibold uppercase tracking-widest text-brassdark">Client-side Unicode utility</p>
+      <h1 class="mt-2 font-display text-4xl tracking-tight sm:text-5xl">{converter.name}</h1>
+      <p class="mt-4 text-lg leading-relaxed text-ink/75">{converter.description}</p>
+    </header>
+
+    <div class="mt-8 grid gap-8 lg:grid-cols-8">
+      <main class="space-y-8 lg:col-span-5">
+        <ConverterTool converter={converter} options={options} />
+
+        <section class="rounded-2xl border border-brass/25 bg-cream/70 p-5 sm:p-6" aria-labelledby="converter-answer">
+          <h2 id="converter-answer" class="font-display text-2xl">{converter.name}: direct answer</h2>
+          <p class="mt-3 leading-relaxed text-ink/85">Use the tool above to convert pasted {converter.family} text into standard Unicode or export Unicode text for a legacy workflow. It runs without a server round trip, preserves mixed text, and gives you a local copy/download path.</p>
+          <div class="mt-5 overflow-x-auto rounded-xl border border-ink/10 bg-white">
+            <table class="w-full min-w-[600px] text-sm"><caption class="sr-only">Converter specifications</caption><thead class="bg-cream/80 text-left"><tr class="border-b border-ink/10"><th class="px-4 py-3">Specification</th><th class="px-4 py-3">Value</th></tr></thead><tbody class="divide-y divide-ink/5">
+              <tr><th scope="row" class="px-4 py-3 text-left font-medium">Encoding family</th><td class="px-4 py-3">{converter.family}</td></tr>
+              <tr><th scope="row" class="px-4 py-3 text-left font-medium">Script</th><td class="px-4 py-3">{converter.script}</td></tr>
+              <tr><th scope="row" class="px-4 py-3 text-left font-medium">Direction</th><td class="px-4 py-3">{isHub ? 'Bidirectional hub' : converter.direction === 'unicode-to-legacy' ? 'Unicode → legacy' : 'Legacy → Unicode'}</td></tr>
+              <tr><th scope="row" class="px-4 py-3 text-left font-medium">Privacy</th><td class="px-4 py-3">Local browser processing; no pasted text upload</td></tr>
+              <tr><th scope="row" class="px-4 py-3 text-left font-medium">Export</th><td class="px-4 py-3">Copy or UTF-8 .txt download</td></tr>
+            </tbody></table>
+          </div>
+        </section>
+
+        <section aria-labelledby="converter-examples"><h2 id="converter-examples" class="font-display text-2xl">Conversion examples</h2><div class="mt-4 overflow-x-auto rounded-xl border border-ink/10"><table class="w-full min-w-[560px] text-sm"><thead class="bg-cream/80 text-left"><tr class="border-b border-ink/10"><th class="px-4 py-3">Input example</th><th class="px-4 py-3">Expected output</th></tr></thead><tbody class="divide-y divide-ink/5"><tr><td class="px-4 py-3 font-mono">{converter.sampleInput}</td><td class="px-4 py-3 text-lg">{converter.sampleOutput}</td></tr><tr><td class="px-4 py-3 font-mono">English mixed 123</td><td class="px-4 py-3">English mixed 123</td></tr><tr><td class="px-4 py-3 font-mono">Punctuation, numbers!</td><td class="px-4 py-3">Punctuation, numbers!</td></tr></tbody></table></div></section>
+
+        <section aria-labelledby="converter-notes"><h2 id="converter-notes" class="font-display text-2xl">Practical conversion notes</h2><ul class="mt-4 space-y-3">{converter.notes.map((note) => <li class="flex gap-3"><span class="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-brass"></span><span class="leading-relaxed text-ink/80">{note}</span></li>)}</ul></section>
+
+        <section aria-labelledby="converter-faq"><h2 id="converter-faq" class="font-display text-2xl">Frequently asked questions</h2><div class="mt-4 divide-y divide-ink/10 border-y border-ink/10">{faqs.map((faq) => <details class="group py-4"><summary class="flex cursor-pointer list-none items-baseline justify-between gap-4 font-medium"><h3 class="text-base font-medium">{faq.q}</h3><span class="text-brassdark transition group-open:rotate-45" aria-hidden="true">+</span></summary><p class="mt-2 leading-relaxed text-ink/80">{faq.a}</p></details>)}</div></section>
+      </main>
+
+      <aside class="space-y-6 lg:col-span-3 lg:sticky lg:top-20 lg:self-start">
+        <div class="rounded-2xl border border-ink/10 bg-white p-5 shadow-sm"><h2 class="font-display text-xl">Related converter routes</h2><ul class="mt-3 space-y-2">{(isHub ? options : options.filter((option) => option.slug !== converter.slug && option.family === converter.family).slice(0, 6)).map((option) => <li><a href={`${base}/${option.slug}/`} class="block rounded-lg border border-ink/10 px-3 py-2 text-sm hover:border-brass/60 hover:bg-cream">{option.name}</a></li>)}</ul></div>
+        <div class="rounded-2xl border border-ink/10 bg-cream/70 p-5"><h2 class="font-display text-xl">Continue the workflow</h2><ul class="mt-3 space-y-2 text-sm"><li><a href={`${base}/phonetic-typing/`} class="text-brassdark hover:underline">Type English sounds into native script</a></li><li><a href={`${base}/typing-test/`} class="text-brassdark hover:underline">Practise typing speed</a></li><li><a href={`${base}/unicode-tools/`} class="text-brassdark hover:underline">Inspect and clean Unicode text</a></li></ul></div>
+      </aside>
+    </div>
+  </div>
+</Base>

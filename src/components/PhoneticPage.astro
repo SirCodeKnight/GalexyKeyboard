@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import PhoneticTool from './PhoneticTool.astro';
+import type { PhoneticPageDef } from '../data/phonetic-pages';
+
+interface Props { page: PhoneticPageDef; options: readonly PhoneticPageDef[] }
+const { page, options } = Astro.props;
+const site = (Astro.site?.href ?? 'https://wowgalexy.in').replace(/\/+$/, '');
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const pageUrl = `${site}${base}/${page.slug}/`;
+const faqs = [
+  { q: `What is English to ${page.name} phonetic typing?`, a: `It lets you enter familiar Latin sounds such as ${page.sample} and produces Unicode ${page.name} text such as ${page.output}.` },
+  { q: 'Is this a translator?', a: 'No. It is a local phonetic input helper. It maps common sound patterns and dictionary words; it does not understand the meaning of a sentence or translate between languages.' },
+  { q: 'Does it work offline after the page loads?', a: 'The conversion engine is bundled into the page and runs locally after the static assets load.' },
+  { q: 'Can I copy the output into WhatsApp or Google?', a: 'Yes. The output is standard Unicode text and can be copied into messaging apps, documents and search boxes.' },
+  { q: 'Can I use a real keyboard?', a: 'Yes. Type directly in the English input box; no system-language change is needed.' },
+  { q: 'Does it preserve punctuation and spaces?', a: 'Yes. Spaces, punctuation, numbers and mixed Latin text are preserved.' },
+  { q: 'Can I download the native text?', a: 'Yes. Use Download .txt to save the output locally.' },
+  { q: 'What happens with a name or word not in the dictionary?', a: 'The character and sound fallback handles common chunks, but unusual names should be reviewed before you send or publish them.' },
+  { q: 'Can I use this on mobile?', a: 'Yes. The input, output and copy controls are responsive and work in modern mobile browsers.' },
+  { q: 'Does the tool upload what I type?', a: 'No. The phonetic transformation runs in the browser and does not submit the draft to a server.' },
+  { q: 'Where is the matching native keyboard?', a: `Open the ${page.name} keyboard page from the related links to edit the output with the script-specific layout.` },
+  { q: 'How should I report a wrong output?', a: 'Send the input, expected native spelling and language to the contact page so the local dictionary can be improved.' },
+];
+const jsonld = [
+  { '@context': 'https://schema.org', '@type': 'WebApplication', name: page.name, url: pageUrl, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any (web browser)', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, description: page.description },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((faq) => ({ '@type': 'Question', name: faq.q, acceptedAnswer: { '@type': 'Answer', text: faq.a } })) },
+];
+---
+
+<Base title={page.title} description={page.description} jsonld={jsonld} lang={page.langCode} keywords={`English to ${page.name} typing, phonetic ${page.name} keyboard, ${page.name} transliteration`}>
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
+    <nav class="text-sm text-ink/60" aria-label="Breadcrumb"><a href={`${base}/`} class="hover:text-brassdark">Home</a><span aria-hidden="true"> / </span><a href={`${base}/phonetic-typing/`} class="hover:text-brassdark">Phonetic typing</a><span aria-hidden="true"> / </span><span class="text-ink">{page.name}</span></nav>
+    <header class="mt-6 max-w-4xl"><p class="text-sm font-semibold uppercase tracking-widest text-brassdark">English → native Unicode</p><h1 class="mt-2 font-display text-4xl tracking-tight sm:text-5xl">{page.name} phonetic typing</h1><p class="mt-4 text-lg leading-relaxed text-ink/75">{page.description}</p></header>
+    <div class="mt-8 grid gap-8 lg:grid-cols-8"><main class="space-y-8 lg:col-span-5"><PhoneticTool page={page} />
+      <section class="rounded-2xl border border-brass/25 bg-cream/70 p-5 sm:p-6"><h2 class="font-display text-2xl">{page.name} phonetic typing: direct answer</h2><p class="mt-3 leading-relaxed text-ink/85">Type an English-sound spelling into the left box and the tool writes a Unicode {page.name} approximation on the right. It is useful when a system keyboard is unavailable, while the dedicated native keyboard remains available for exact script-layout entry.</p><div class="mt-5 overflow-x-auto rounded-xl border border-ink/10 bg-white"><table class="w-full min-w-[560px] text-sm"><thead class="bg-cream/80 text-left"><tr class="border-b border-ink/10"><th class="px-4 py-3">Specification</th><th class="px-4 py-3">Value</th></tr></thead><tbody class="divide-y divide-ink/5"><tr><th class="px-4 py-3 text-left font-medium">Input</th><td class="px-4 py-3">English phonetic spelling</td></tr><tr><th class="px-4 py-3 text-left font-medium">Output</th><td class="px-4 py-3">{page.name} Unicode text</td></tr><tr><th class="px-4 py-3 text-left font-medium">Privacy</th><td class="px-4 py-3">Local browser processing</td></tr><tr><th class="px-4 py-3 text-left font-medium">Sample</th><td class="px-4 py-3 font-mono">{page.sample} → {page.output}</td></tr></tbody></table></div></section>
+      <section><h2 class="font-display text-2xl">Frequently asked questions</h2><div class="mt-4 divide-y divide-ink/10 border-y border-ink/10">{faqs.map((faq) => <details class="group py-4"><summary class="flex cursor-pointer list-none justify-between gap-4 font-medium"><h3>{faq.q}</h3><span class="text-brassdark group-open:rotate-45" aria-hidden="true">+</span></summary><p class="mt-2 leading-relaxed text-ink/80">{faq.a}</p></details>)}</div></section>
+    </main><aside class="space-y-6 lg:col-span-3 lg:sticky lg:top-20 lg:self-start"><div class="rounded-2xl border border-ink/10 bg-white p-5 shadow-sm"><h2 class="font-display text-xl">More phonetic pages</h2><ul class="mt-3 space-y-2">{options.filter((option) => option.slug !== page.slug).slice(0, 8).map((option) => <li><a href={`${base}/${option.slug}/`} class="block rounded-lg border border-ink/10 px-3 py-2 text-sm hover:border-brass/60 hover:bg-cream">{option.name}</a></li>)}</ul></div><div class="rounded-2xl border border-ink/10 bg-cream/70 p-5"><h2 class="font-display text-xl">Exact layout input</h2><p class="mt-2 text-sm leading-relaxed text-ink/75">For exact native key placement, use the matching <a class="text-brassdark underline" href={`${base}/${page.name.toLowerCase()}-keyboard/`}>{page.name} keyboard</a> when available.</p></div></aside></div>
+  </div>
+</Base>

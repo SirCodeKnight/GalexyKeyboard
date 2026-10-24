@@ -14,8 +14,16 @@ Supported languages include: Hindi, Arabic, Bengali, Assamese, Urdu, Russian, Uk
 - Right-to-left scripts (Arabic, Hebrew, Urdu, Farsi) are fully supported.
 - All typing happens locally in the browser; no text is stored or transmitted.
 
+## Sister webtools
+
+- [Legacy font converter hub](https://wowgalexy.in/font-converter/): convert common legacy-font text to Unicode in the browser.
+- [Phonetic typing hub](https://wowgalexy.in/phonetic-typing/): type English sounds and get common native-script output.
+- [Typing speed test hub](https://wowgalexy.in/typing-test/): practise timed typing with WPM, accuracy and error metrics.
+- [Unicode tools hub](https://wowgalexy.in/unicode-tools/): inspect code points, clean invisible characters, normalize RTL text and count multilingual text.
+
 ## Further resources
 
 - [Full site guide](https://wowgalexy.in/llms-full.txt): Usage instructions, language-page directory, and common questions.
 - [Discovery API description](https://wowgalexy.in/openapi.json): Read-only public documentation endpoints.
 - [Sitemap index](https://wowgalexy.in/sitemap-index.xml): Published page discovery.
+- [Sitemap compatibility alias](https://wowgalexy.in/sitemap.xml): Equivalent sitemap index for crawlers that expect `/sitemap.xml`.

@@ -1,0 +1,75 @@
+---
+import type { TypingTestDef } from '../data/typing-tests';
+
+interface Props { test: TypingTestDef }
+const { test } = Astro.props;
+---
+
+<section class="typing-test-tool rounded-2xl border border-ink/10 bg-white p-4 shadow-card sm:p-6" data-test={JSON.stringify(test)}>
+  <div class="flex flex-wrap items-baseline justify-between gap-3"><div><h2 class="font-display text-2xl">Timed {test.name} typing test</h2><p class="mt-1 text-sm text-ink/65">Start typing in the box. The timer begins with your first character.</p></div><span data-status class="text-xs text-sage" role="status" aria-live="polite">Ready</span></div>
+  <div class="mt-4 grid gap-3 sm:grid-cols-3"><label class="text-sm font-semibold">Duration<select data-duration class="mt-1 block w-full rounded-lg border border-ink/15 bg-cream/60 px-3 py-2 font-normal"><option value="60">1 minute</option><option value="120">2 minutes</option><option value="300">5 minutes</option><option value="600">10 minutes</option><option value="900">15 minutes</option></select></label><label class="text-sm font-semibold">Passage<select data-passage class="mt-1 block w-full rounded-lg border border-ink/15 bg-cream/60 px-3 py-2 font-normal">{test.passages.map((_, index) => <option value={index}>Passage {index + 1}</option>)}</select></label><label class="flex items-end gap-2 rounded-lg border border-ink/10 px-3 py-2 text-sm font-semibold"><input type="checkbox" data-lock class="accent-brassdark" /> Exam mode: lock Backspace</label></div>
+  <div data-target class="mt-4 rounded-xl border border-ink/10 bg-cream/70 p-4 text-lg leading-relaxed" lang={test.langCode} dir="auto">{test.passages[0]}</div>
+  <textarea data-input class="mt-4 min-h-[150px] w-full resize-y rounded-xl border border-ink/15 bg-white p-4 text-lg leading-relaxed focus:border-brass focus:outline-none focus:ring-2 focus:ring-brass/50" lang={test.langCode} dir="auto" placeholder="Type the passage here…" spellcheck="false"></textarea>
+  <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5"><div class="rounded-xl bg-cream/70 p-3"><span class="block text-xs uppercase tracking-wide text-ink/55">Time</span><strong data-time class="text-2xl">01:00</strong></div><div class="rounded-xl bg-cream/70 p-3"><span class="block text-xs uppercase tracking-wide text-ink/55">Gross WPM</span><strong data-gross class="text-2xl">0</strong></div><div class="rounded-xl bg-cream/70 p-3"><span class="block text-xs uppercase tracking-wide text-ink/55">Net WPM</span><strong data-net class="text-2xl">0</strong></div><div class="rounded-xl bg-cream/70 p-3"><span class="block text-xs uppercase tracking-wide text-ink/55">Accuracy</span><strong data-accuracy class="text-2xl">100%</strong></div><div class="rounded-xl bg-cream/70 p-3"><span class="block text-xs uppercase tracking-wide text-ink/55">Errors</span><strong data-errors class="text-2xl">0</strong></div></div>
+  <div class="mt-4 flex flex-wrap gap-2"><button type="button" data-reset class="rounded-lg bg-night px-4 py-2 text-sm font-semibold text-paper">Reset test</button><button type="button" data-certificate class="rounded-lg border border-ink/15 px-4 py-2 text-sm font-semibold hover:border-brass">Print certificate</button></div>
+</section>
+
+<script>
+  interface TestData { name: string; langCode: string; passages: string[] }
+  const formatTime = (seconds: number) => `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+  const init = (root: HTMLElement) => {
+    const data = JSON.parse(root.dataset.test || '{}') as TestData;
+    const target = root.querySelector<HTMLElement>('[data-target]')!;
+    const input = root.querySelector<HTMLTextAreaElement>('[data-input]')!;
+    const duration = root.querySelector<HTMLSelectElement>('[data-duration]')!;
+    const passage = root.querySelector<HTMLSelectElement>('[data-passage]')!;
+    const lock = root.querySelector<HTMLInputElement>('[data-lock]')!;
+    const time = root.querySelector<HTMLElement>('[data-time]')!;
+    const gross = root.querySelector<HTMLElement>('[data-gross]')!;
+    const net = root.querySelector<HTMLElement>('[data-net]')!;
+    const accuracy = root.querySelector<HTMLElement>('[data-accuracy]')!;
+    const errors = root.querySelector<HTMLElement>('[data-errors]')!;
+    const status = root.querySelector<HTMLElement>('[data-status]')!;
+    let remaining = Number(duration.value);
+    let timer: number | undefined;
+    let started = false;
+    let finished = false;
+
+    const currentTarget = () => data.passages[Number(passage.value)] ?? data.passages[0] ?? '';
+    const updateMetrics = () => {
+      const value = input.value;
+      const passageText = currentTarget();
+      let correct = 0;
+      for (let i = 0; i < value.length; i += 1) if (value[i] === passageText[i]) correct += 1;
+      const mistakeCount = Math.max(0, value.length - correct);
+      const elapsed = Math.max(1, Number(duration.value) - remaining);
+      const minutes = elapsed / 60;
+      const grossValue = Math.round((value.length / 5 / minutes) * 10) / 10;
+      const netValue = Math.max(0, Math.round((correct / 5 / minutes) * 10) / 10);
+      const accuracyValue = value.length ? Math.round((correct / value.length) * 100) : 100;
+      gross.textContent = String(grossValue);
+      net.textContent = String(netValue);
+      accuracy.textContent = `${accuracyValue}%`;
+      errors.textContent = String(mistakeCount);
+      if (value.length >= passageText.length) finish();
+    };
+    const finish = () => {
+      if (finished) return;
+      finished = true; started = false;
+      if (timer) window.clearInterval(timer);
+      input.disabled = true;
+      status.textContent = 'Test complete. Review your result or print a certificate.';
+      updateMetrics();
+    };
+    const tick = () => { remaining -= 1; time.textContent = formatTime(remaining); updateMetrics(); if (remaining <= 0) finish(); };
+    const start = () => { if (started || finished) return; started = true; status.textContent = 'Timer running.'; timer = window.setInterval(tick, 1000); };
+    const reset = () => { if (timer) window.clearInterval(timer); remaining = Number(duration.value); started = false; finished = false; input.disabled = false; input.value = ''; time.textContent = formatTime(remaining); gross.textContent = '0'; net.textContent = '0'; accuracy.textContent = '100%'; errors.textContent = '0'; status.textContent = 'Ready'; input.focus(); };
+    const setPassage = () => { target.textContent = currentTarget(); target.setAttribute('lang', data.langCode); reset(); };
+    duration.addEventListener('change', reset); passage.addEventListener('change', setPassage); input.addEventListener('input', () => { start(); updateMetrics(); });
+    input.addEventListener('keydown', (event) => { if (lock.checked && event.key === 'Backspace') event.preventDefault(); });
+    root.querySelector('[data-reset]')!.addEventListener('click', reset);
+    root.querySelector('[data-certificate]')!.addEventListener('click', () => { const popup = window.open('', '_blank', 'noopener,noreferrer,width=760,height=540'); if (!popup) { status.textContent = 'Allow pop-ups to print the certificate.'; return; } popup.document.write(`<title>${data.name} typing certificate</title><style>body{font-family:system-ui;padding:48px;text-align:center}main{border:8px double #b9852e;padding:48px}h1{font-family:Georgia;font-size:40px}strong{font-size:32px}</style><main><h1>GalexyKeyboard</h1><p>Typing practice certificate</p><h2>${data.name} typing test</h2><p>Gross WPM: <strong>${gross.textContent}</strong></p><p>Net WPM: <strong>${net.textContent}</strong></p><p>Accuracy: <strong>${accuracy.textContent}</strong></p><p>Errors: <strong>${errors.textContent}</strong></p><p>Generated locally in the browser.</p></main>`); popup.document.close(); popup.focus(); popup.print(); });
+    reset();
+  };
+  document.querySelectorAll<HTMLElement>('.typing-test-tool').forEach(init);
+</script>

@@ -8,11 +8,13 @@ const payload = JSON.stringify({
   extra: kb.extra ?? null,
   autoUpper: !!kb.autoUpper,
   compose: !!kb.compose,
+  phonetic: kb.langCode ?? 'hi',
 });
 ---
 <section
   class="kb-tool rounded-2xl bg-white border border-ink/10 shadow-card p-4 sm:p-6"
   data-kb={payload}
+  data-slug={kb.slug}
   aria-label={`${kb.name} virtual keyboard`}
 >
   <label class="sr-only" for={`ta-${kb.slug}`}>Your {kb.name} text</label>
@@ -25,6 +27,18 @@ const payload = JSON.stringify({
     autocomplete="off"
   ></textarea>
 
+  <div class="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-ink/10 bg-cream/70 p-2" role="group" aria-label="Keyboard input mode">
+    <span class="mr-1 text-xs font-semibold uppercase tracking-wide text-ink/60">Input mode</span>
+    <button type="button" class="kb-mode-native min-h-[38px] rounded-lg bg-night px-3 py-2 text-xs font-semibold text-paper" aria-pressed="true">Native layout</button>
+    <button type="button" class="kb-mode-phonetic min-h-[38px] rounded-lg border border-ink/15 px-3 py-2 text-xs font-semibold hover:border-brass" aria-pressed="false">Phonetic (English → native)</button>
+  </div>
+
+  <div class="kb-phonetic-panel mt-3 hidden rounded-xl border border-brass/25 bg-brass/5 p-3" aria-label="Phonetic typing" hidden>
+    <label class="block text-sm font-semibold" for={`phonetic-${kb.slug}`}>Type in English sounds</label>
+    <input id={`phonetic-${kb.slug}`} class="kb-phonetic-input mt-2 w-full rounded-lg border border-ink/15 bg-white px-3 py-2 text-base focus:border-brass focus:outline-none focus:ring-2 focus:ring-brass/50" placeholder={`Try ${kb.name === 'Hindi' ? 'namaste' : kb.name === 'Bengali' ? 'nomoskar' : kb.name === 'Persian' ? 'salam' : kb.name === 'Russian' ? 'privet' : 'hello'}`} autocomplete="off" spellcheck="false" />
+    <p class="mt-2 text-xs text-ink/65">The converted Unicode text appears below. Common words use a built-in local dictionary; punctuation and mixed English are preserved.</p>
+  </div>
+
   <div class="mt-4 grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-3">
     <button type="button" class="kb-select-all btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Select All</button>
     <button type="button" class="kb-copy btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-gradient-to-r from-brass to-brassdark !text-ink !shadow-[0_4px_0_0_#92400e] !border-amber-700/50">Copy</button>
@@ -34,6 +48,7 @@ const payload = JSON.stringify({
     <button type="button" class="kb-translate btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-gradient-to-r from-blue-600 to-indigo-700 !text-white !shadow-[0_4px_0_0_#1e3a8a] !border-blue-800">Translate</button>
     <button type="button" class="kb-dl btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Download .txt</button>
     <button type="button" class="kb-share btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Share link</button>
+    <button type="button" class="kb-embed btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Embed keyboard</button>
     <span class="kb-status text-xs text-sage min-w-[4rem]" role="status" aria-live="polite"></span>
 
     <div class="col-span-2 sm:ml-auto flex items-center justify-between sm:justify-end gap-5 text-xs text-ink/60 w-full sm:w-auto mt-2 sm:mt-0">
@@ -45,9 +60,24 @@ const payload = JSON.stringify({
   </div>
 
   <div class="kb-rows mt-6 space-y-2.5 select-none" dir="ltr"></div>
+
+  <div class="kb-embed-modal fixed inset-0 z-50 hidden items-center justify-center bg-night/70 p-4" role="dialog" aria-modal="true" aria-labelledby={`embed-title-${kb.slug}`}>
+    <div class="w-full max-w-xl rounded-2xl bg-white p-5 shadow-2xl">
+      <div class="flex items-center justify-between gap-4">
+        <h2 id={`embed-title-${kb.slug}`} class="font-display text-2xl">Embed this keyboard</h2>
+        <button type="button" class="kb-embed-close rounded-lg border border-ink/15 px-3 py-2 text-sm" aria-label="Close embed dialog">Close</button>
+      </div>
+      <p class="mt-3 text-sm text-ink/70">Copy this iframe into a blog, classroom page or documentation site.</p>
+      <textarea class="kb-embed-code mt-3 h-28 w-full rounded-xl border border-ink/15 bg-cream/60 p-3 font-mono text-xs" readonly aria-label="Embed code"></textarea>
+      <button type="button" class="kb-embed-copy mt-3 rounded-lg bg-night px-4 py-2 text-sm font-semibold text-paper">Copy embed code</button>
+      <p class="kb-embed-status mt-2 text-xs text-sage" role="status" aria-live="polite"></p>
+    </div>
+  </div>
 </section>
 
 <script>
+  import { transliterate } from '../lib/phonetic';
+
   // ---- Hangul (Korean) composition ------------------------------------
   const CHO = [...'\u3131\u3132\u3134\u3137\u3138\u3139\u3141\u3142\u3143\u3145\u3146\u3147\u3148\u3149\u314a\u314b\u314c\u314d\u314e'];
   const JUNG = [...'\u314f\u3150\u3151\u3152\u3153\u3154\u3155\u3156\u3157\u3158\u3159\u315a\u315b\u315c\u315d\u315e\u315f\u3160\u3161\u3162\u3163'];
@@ -95,14 +125,22 @@ const payload = JSON.stringify({
 
   function initTool(root: HTMLElement) {
     const kb = JSON.parse(root.dataset.kb || '{}') as {
-      rows: KeyDef[][]; extra: KeyDef[] | null; autoUpper: boolean; compose: boolean;
+      rows: KeyDef[][]; extra: KeyDef[] | null; autoUpper: boolean; compose: boolean; phonetic: string;
     };
     const ta = root.querySelector<HTMLTextAreaElement>('.kb-text')!;
     const rowsEl = root.querySelector<HTMLElement>('.kb-rows')!;
     const status = root.querySelector<HTMLElement>('.kb-status')!;
     const count = root.querySelector<HTMLElement>('.kb-count')!;
     const phys = root.querySelector<HTMLInputElement>('.kb-phys')!;
+    const nativeMode = root.querySelector<HTMLButtonElement>('.kb-mode-native')!;
+    const phoneticMode = root.querySelector<HTMLButtonElement>('.kb-mode-phonetic')!;
+    const phoneticPanel = root.querySelector<HTMLElement>('.kb-phonetic-panel')!;
+    const phoneticInput = root.querySelector<HTMLInputElement>('.kb-phonetic-input')!;
+    const embedModal = root.querySelector<HTMLElement>('.kb-embed-modal')!;
+    const embedCode = root.querySelector<HTMLTextAreaElement>('.kb-embed-code')!;
+    const embedStatus = root.querySelector<HTMLElement>('.kb-embed-status')!;
     let shifted = false;
+    let mode: 'native' | 'phonetic' = 'native';
 
     // History stack state for Undo/Redo
     const undoStack: { val: string; sStart: number; sEnd: number }[] = [];
@@ -161,6 +199,30 @@ const payload = JSON.stringify({
       uBtn.classList.toggle('pointer-events-none', uBtn.disabled);
       rBtn.classList.toggle('opacity-50', rBtn.disabled);
       rBtn.classList.toggle('pointer-events-none', rBtn.disabled);
+    }
+
+    function updatePhoneticOutput() {
+      ta.value = transliterate(phoneticInput.value, kb.phonetic);
+      updateCount();
+    }
+
+    function setMode(next: 'native' | 'phonetic') {
+      mode = next;
+      const phonetic = next === 'phonetic';
+      ta.readOnly = phonetic;
+      phoneticPanel.hidden = !phonetic;
+      phoneticPanel.classList.toggle('hidden', !phonetic);
+      rowsEl.classList.toggle('hidden', phonetic);
+      nativeMode.setAttribute('aria-pressed', String(!phonetic));
+      phoneticMode.setAttribute('aria-pressed', String(phonetic));
+      nativeMode.classList.toggle('bg-night', !phonetic);
+      nativeMode.classList.toggle('text-paper', !phonetic);
+      nativeMode.classList.toggle('border', phonetic);
+      phoneticMode.classList.toggle('bg-night', phonetic);
+      phoneticMode.classList.toggle('text-paper', phonetic);
+      phoneticMode.classList.toggle('border', !phonetic);
+      if (phonetic) updatePhoneticOutput();
+      else { ta.focus(); updateCount(); }
     }
 
     // Initial state push
@@ -270,9 +332,34 @@ const payload = JSON.stringify({
     root.querySelector('.kb-redo')!.addEventListener('click', performRedo);
 
     root.querySelector('.kb-clear')!.addEventListener('click', () => {
-      ta.value = ''; updateCount(); ta.focus();
+      ta.value = ''; phoneticInput.value = ''; updateCount(); ta.focus();
       saveState();
     });
+
+    nativeMode.addEventListener('click', () => setMode('native'));
+    phoneticMode.addEventListener('click', () => setMode('phonetic'));
+    phoneticInput.addEventListener('input', updatePhoneticOutput);
+
+    const closeEmbed = () => {
+      embedModal.classList.add('hidden');
+      embedModal.classList.remove('flex');
+      embedModal.setAttribute('aria-hidden', 'true');
+    };
+    root.querySelector('.kb-embed')!.addEventListener('click', () => {
+      const url = new URL(`/embed/${root.dataset.slug}/`, window.location.origin).href;
+      embedCode.value = `<iframe src="${url}" title="GalexyKeyboard ${root.dataset.slug}" loading="lazy" style="width:100%;min-height:560px;border:0;border-radius:16px" allow="clipboard-write"></iframe>`;
+      embedModal.classList.remove('hidden');
+      embedModal.classList.add('flex');
+      embedModal.removeAttribute('aria-hidden');
+      embedCode.focus();
+    });
+    root.querySelector('.kb-embed-close')!.addEventListener('click', closeEmbed);
+    embedModal.addEventListener('click', (event) => { if (event.target === embedModal) closeEmbed(); });
+    root.querySelector('.kb-embed-copy')!.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(embedCode.value); embedStatus.textContent = 'Embed code copied.'; }
+      catch { embedCode.select(); embedStatus.textContent = 'Code selected; use your device Copy command.'; }
+    });
+    window.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !embedModal.classList.contains('hidden')) closeEmbed(); });
 
     root.querySelector('.kb-translate')!.addEventListener('click', () => {
       const txt = ta.value.trim();
@@ -313,6 +400,7 @@ const payload = JSON.stringify({
     });
 
     ta.addEventListener('input', () => {
+      if (mode === 'phonetic') return;
       updateCount();
       saveState();
     });
@@ -330,7 +418,7 @@ const payload = JSON.stringify({
     }
 
     ta.addEventListener('keydown', (e) => {
-      if (!mappable || !phys.checked || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (mode === 'phonetic' || !mappable || !phys.checked || e.ctrlKey || e.metaKey || e.altKey) return;
       const k = codeMap.get(e.code);
       if (!k) return;
       e.preventDefault();
@@ -347,6 +435,7 @@ const payload = JSON.stringify({
     });
 
     updateCount();
+    setMode('native');
   }
 
   document.querySelectorAll<HTMLElement>('.kb-tool').forEach(initTool);

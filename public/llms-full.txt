@@ -68,3 +68,13 @@ Use the corresponding language page above. It contains the working keyboard, lay
 - Crawling rules: https://wowgalexy.in/robots.txt
 
 The live language pages and sitemap are the source for the currently published routes and capabilities.
+
+## Published tool hubs
+
+- https://wowgalexy.in/font-converter/
+- https://wowgalexy.in/legacy-font-to-unicode/
+- https://wowgalexy.in/phonetic-typing/
+- https://wowgalexy.in/typing-test/
+- https://wowgalexy.in/unicode-tools/
+
+Every tool is designed as a static browser flow. Converter, phonetic and Unicode tools process pasted text in the current tab; typing tests calculate WPM and accuracy locally.

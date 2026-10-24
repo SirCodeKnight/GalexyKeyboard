@@ -62,6 +62,50 @@
           }
         }
       }
+    },
+    "/sitemap.xml": {
+      "get": {
+        "operationId": "getSitemapCompatibilityAlias",
+        "summary": "Read the compatibility sitemap alias",
+        "responses": {
+          "200": {
+            "description": "Equivalent sitemap index for crawlers that request /sitemap.xml.",
+            "content": {
+              "application/xml": {
+                "schema": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/font-converter/": {
+      "get": {
+        "operationId": "getFontConverterHub",
+        "summary": "Open the legacy font converter hub",
+        "responses": { "200": { "description": "Static converter hub page." } }
+      }
+    },
+    "/phonetic-typing/": {
+      "get": {
+        "operationId": "getPhoneticTypingHub",
+        "summary": "Open the phonetic typing hub",
+        "responses": { "200": { "description": "Static phonetic typing hub page." } }
+      }
+    },
+    "/typing-test/": {
+      "get": {
+        "operationId": "getTypingTestHub",
+        "summary": "Open the typing test hub",
+        "responses": { "200": { "description": "Static typing test hub page." } }
+      }
+    },
+    "/unicode-tools/": {
+      "get": {
+        "operationId": "getUnicodeToolsHub",
+        "summary": "Open the Unicode tools hub",
+        "responses": { "200": { "description": "Static Unicode tools hub page." } }
+      }
     }
   }
 }

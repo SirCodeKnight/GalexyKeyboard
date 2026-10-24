@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import KeyboardTool from '../../components/KeyboardTool.astro';
+import { KEYBOARDS } from '../../data/keyboards';
+import type { KeyboardDef } from '../../data/keyboards';
+
+export function getStaticPaths() {
+  return KEYBOARDS.map((kb) => ({ params: { slug: kb.slug }, props: { kb } }));
+}
+
+interface Props { kb: KeyboardDef }
+const { kb } = Astro.props;
+---
+
+<Base title={`${kb.name} Keyboard Embed – GalexyKeyboard`} description={`Embeddable ${kb.name} Unicode keyboard from GalexyKeyboard.`} embed>
+  <main class="min-h-screen bg-paper p-2 sm:p-4">
+    <KeyboardTool kb={kb} />
+  </main>
+</Base>

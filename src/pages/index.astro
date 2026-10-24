@@ -51,40 +51,10 @@ const keywords = 'online keyboard, virtual keyboard, multilingual keyboard onlin
           <a href={`${base}/about/`} class="rounded-lg border border-paper/25 px-5 py-2.5 hover:bg-paper/10 transition">How it works</a>
         </div>
       </div>
-      <div class="lg:col-span-5 hidden lg:flex items-center justify-center p-4 relative animate-bounce-slow" style="perspective: 1000px;">
-        <div class="hero-3d-keyboard relative w-[440px] h-[240px] bg-slate-950/95 border border-slate-800/80 rounded-2xl p-4 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8),_0_30px_60px_-30px_rgba(0,0,0,0.9),_inset_0_1px_1px_rgba(255,255,255,0.05)] select-none hover:rotate-x-[18deg] hover:rotate-y-[-8deg] transition-all duration-700 ease-out" style="transform: rotateX(25deg) rotateY(-15deg) rotateZ(5deg); transform-style: preserve-3d;">
-          <div class="space-y-1.5">
-            <div class="flex gap-1 justify-center">
-              {['क', 'ا', 'A', 'Ω', 'あ', '한', 'Ñ', 'த', 'ف', 'Я'].map((c, i) => (
-                <div class="w-8 h-8 rounded bg-slate-900 border border-slate-800 shadow-[0_3px_0_0_#020617] text-slate-400 font-bold flex items-center justify-center text-xs hero-key-animate" style={`animation-delay: ${i*0.2}s`}>{c}</div>
-              ))}
-            </div>
-            <div class="flex gap-1 justify-center pl-2">
-              {['د', 'भ', 'S', 'λ', 'い', '글', '¿', 'ம', 'ی', 'Щ'].map((c, i) => (
-                <div class="w-8 h-8 rounded bg-slate-900 border border-slate-800 shadow-[0_3px_0_0_#020617] text-slate-400 font-bold flex items-center justify-center text-xs hero-key-animate" style={`animation-delay: ${0.5 + i*0.25}s`}>{c}</div>
-              ))}
-            </div>
-            <div class="flex gap-1 justify-center pr-2">
-              {['Shift', 'ح', 'Z', 'π', 'う', '수', '¡', 'ந', 'ر', 'Enter'].map((c, i) => (
-                <div class={`h-8 rounded bg-slate-900 border border-slate-800 shadow-[0_3px_0_0_#020617] text-slate-400 font-medium flex items-center justify-center text-[10px] hero-key-animate ${c==='Shift' || c==='Enter' ? 'px-2 font-semibold text-slate-500 bg-slate-900/70' : 'w-8 text-slate-400'}`} style={`animation-delay: ${1.0 + i*0.3}s`}>{c}</div>
-              ))}
-            </div>
-            <div class="flex gap-1 justify-center">
-              <div class="w-10 h-8 rounded bg-slate-900/70 border border-slate-800 shadow-[0_3px_0_0_#020617] text-slate-600 font-bold flex items-center justify-center text-[10px]">Ctrl</div>
-              <div class="w-24 h-8 rounded bg-slate-900 border border-slate-800 shadow-[0_3px_0_0_#020617] hero-key-animate flex items-center justify-center" style="animation-delay: 1.5s">
-                <span class="w-10 h-0.5 bg-slate-800 rounded-full"></span>
-              </div>
-              <div class="w-10 h-8 rounded bg-slate-900/70 border border-slate-800 shadow-[0_3px_0_0_#020617] text-slate-600 font-bold flex items-center justify-center text-[10px]">Alt</div>
-            </div>
-          </div>
-          <div class="absolute -inset-1 bg-gradient-to-r from-brass to-brassdark rounded-2xl blur-xl opacity-20 -z-10 animate-pulse"></div>
-        </div>
+      <div class="lg:col-span-5 min-w-0">
+        <QuickKeyboardTool keyboards={KEYBOARDS} />
       </div>
     </div>
-  </section>
-
-  <section class="max-w-content mx-auto px-4 sm:px-6 -mt-8 relative z-10">
-    <QuickKeyboardTool keyboards={KEYBOARDS} />
   </section>
 
   <section class="max-w-content mx-auto px-4 sm:px-6 py-10">
@@ -109,6 +79,26 @@ const keywords = 'online keyboard, virtual keyboard, multilingual keyboard onlin
             <tr><th scope="row" class="px-4 py-3 text-left font-medium">Privacy</th><td class="px-4 py-3">No sign-up and no remote text submission</td><td class="px-4 py-3">Your device</td></tr>
           </tbody>
         </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-content mx-auto px-4 sm:px-6 pb-10" aria-labelledby="webtools-title">
+    <div class="rounded-2xl border border-ink/10 bg-white p-5 shadow-sm sm:p-6">
+      <h2 id="webtools-title" class="font-display text-2xl">More free language webtools</h2>
+      <p class="mt-2 max-w-3xl text-ink/70">Convert legacy fonts, type phonetically, practise exam-style speed, and inspect Unicode text without uploading your draft.</p>
+      <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          ['Font converters', 'Legacy font ↔ Unicode workflows', '/font-converter/'],
+          ['Phonetic typing', 'English sounds → native script', '/phonetic-typing/'],
+          ['Typing tests', 'WPM, net speed and accuracy', '/typing-test/'],
+          ['Unicode tools', 'RTL cleanup and code points', '/unicode-tools/'],
+        ].map(([name, summary, href]) => (
+          <a href={`${base}${href}`} class="rounded-xl border border-ink/10 bg-cream/60 p-4 transition hover:border-brass/60 hover:bg-cream">
+            <h3 class="font-semibold">{name}</h3>
+            <p class="mt-1 text-sm text-ink/65">{summary}</p>
+          </a>
+        ))}
       </div>
     </div>
   </section>

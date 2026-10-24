@@ -65,8 +65,14 @@ try {
   readRequired('llms-full.txt');
 
   const sitemaps = ['sitemap-index.xml', 'sitemap.xml'].filter(hasFile);
+  check(hasFile('sitemap-index.xml'), 'Missing sitemap-index.xml');
+  check(hasFile('sitemap.xml'), 'Missing sitemap.xml compatibility alias');
   check(sitemaps.length > 0, 'Missing sitemap-index.xml or sitemap.xml');
   for (const sitemap of sitemaps) readRequired(sitemap);
+  if (hasFile('sitemap-index.xml') && hasFile('sitemap.xml')) {
+    check(readFileSync(join(outputDir, 'sitemap-index.xml'), 'utf8') === readFileSync(join(outputDir, 'sitemap.xml'), 'utf8'),
+      'sitemap.xml: compatibility alias must match sitemap-index.xml');
+  }
   const declarations = [...robots.matchAll(/^\s*Sitemap\s*:\s*(\S+)/gim)].map((match) => match[1]);
   check(declarations.length > 0, 'robots.txt: missing Sitemap declaration');
   if (declarations.length > 0) {
