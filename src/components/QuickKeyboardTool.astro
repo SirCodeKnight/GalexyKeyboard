@@ -1,0 +1,430 @@
+---
+import { randomUUID } from 'node:crypto';
+import type { KeyboardDef } from '../data/keyboards';
+
+interface Props {
+  keyboards: readonly KeyboardDef[];
+}
+
+const { keyboards } = Astro.props;
+const id = `quick-keyboard-${randomUUID()}`;
+// Keep the client payload limited to layout data, rather than the SEO content.
+const layouts = keyboards.map(({ slug, name, native, dir, langCode, rows, extra, autoUpper, compose }) => ({
+  slug, name, native, dir, langCode, rows, extra, autoUpper, compose,
+}));
+const first = layouts[0];
+---
+
+<quick-keyboard-tool
+  class="block min-w-0 max-w-full rounded-2xl border border-ink/10 bg-white p-4 text-ink shadow-card sm:p-5"
+  data-layouts={JSON.stringify(layouts)}
+  role="region"
+  aria-label="Quick multilingual keyboard"
+>
+  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+    <h2 class="font-display text-xl">Start typing</h2>
+    <p class="text-xs text-ink/65">Drafts stay in this browser.</p>
+  </div>
+
+  {first ? (
+    <>
+      <div class="mt-3 flex gap-2 overflow-x-auto pb-2" role="tablist" aria-label="Keyboard language" aria-orientation="horizontal" dir="ltr">
+        {layouts.map((kb, index) => (
+          <button
+            type="button"
+            id={`${id}-tab-${index}`}
+            role="tab"
+            aria-selected={index === 0 ? 'true' : 'false'}
+            aria-controls={`${id}-panel`}
+            tabindex={index === 0 ? 0 : -1}
+            class="min-h-[44px] shrink-0 rounded-lg border border-ink/15 px-3 py-2 text-left text-xs transition hover:border-brass focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brassdark aria-selected:border-night aria-selected:bg-night aria-selected:text-paper"
+          >
+            <span class="block font-semibold">{kb.name}</span>
+            <bdi class="block" lang={kb.langCode} dir={kb.dir}>{kb.native}</bdi>
+          </button>
+        ))}
+      </div>
+
+      <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-0`}>
+        <label for={`${id}-text`} data-label class="mt-2 block text-sm font-semibold">Your {first.name} text</label>
+        <textarea
+          id={`${id}-text`}
+          class="mt-1 h-28 w-full resize-y rounded-xl border border-ink/15 bg-cream/60 px-3 py-2 text-xl leading-relaxed shadow-inner focus:border-brass focus:outline-none focus:ring-2 focus:ring-brass/60 sm:h-32"
+          dir={first.dir}
+          lang={first.langCode}
+          rows={3}
+          placeholder={`Type in ${first.name}…`}
+          aria-describedby={`${id}-help`}
+          spellcheck="false"
+          autocomplete="off"
+          autocapitalize="off"
+        ></textarea>
+
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+           <button type="button" data-copy class="btn-cinematic-3d min-h-[40px] rounded-lg px-4 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brassdark">Copy</button>
+           <button type="button" data-download class="btn-cinematic-3d min-h-[40px] rounded-lg px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brassdark">Download .txt</button>
+           <button type="button" data-share class="btn-cinematic-3d min-h-[40px] rounded-lg px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brassdark">Share link</button>
+           <button type="button" data-clear class="min-h-[40px] rounded-lg border border-ink/20 px-3 py-2 text-sm font-semibold hover:bg-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brassdark">Clear</button>
+          <label class="flex min-h-[40px] items-center gap-2 text-xs sm:ml-auto">
+            <input type="checkbox" data-physical class="accent-brassdark" checked disabled aria-describedby={`${id}-help`} />
+            Physical keyboard
+          </label>
+        </div>
+
+        <p class="mt-2 text-xs text-ink/70" role="status" aria-live="polite" aria-atomic="true">
+          <span data-count>0 characters</span><span aria-hidden="true"> · </span><span data-status>Ready to type.</span>
+        </p>
+        <p id={`${id}-help`} data-help class="mt-1 text-xs text-ink/65">Choose a language, then type or tap the keys. Shift shows more characters.</p>
+        <div data-keys class="mt-3 space-y-2 select-none" role="group" aria-label={`${first.name} on-screen keyboard`} dir="ltr"></div>
+        <noscript><p class="mt-2 text-sm">Enable JavaScript to switch languages, use on-screen keys, and save drafts. You can still type and select text above.</p></noscript>
+      </div>
+    </>
+  ) : (
+    <p class="mt-3 text-sm text-ink/70">No keyboard layouts are available yet.</p>
+  )}
+</quick-keyboard-tool>
+
+<script>
+  import type { KeyboardDef } from '../data/keyboards';
+
+  interface KeyDef { b: string; s?: string }
+  type Layout = Pick<KeyboardDef, 'slug' | 'name' | 'native' | 'dir' | 'langCode' | 'autoUpper' | 'compose'> & {
+    rows: KeyDef[][]; extra?: KeyDef[];
+  };
+  const STORAGE_PREFIX = 'galexykeyboard:quick-keyboard:v1:draft:';
+  const CODE_ROWS = [
+    ['Backquote', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal'],
+    ['KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight', 'Backslash'],
+    ['KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote'],
+    ['KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash'],
+  ];
+
+  // The same Hangul composition rules used by the full keyboard tool.
+  const CHO = [...'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'];
+  const JUNG = [...'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ'];
+  const JONG = ['', ...'ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ'];
+  const VMIX: Record<string, string> = { 'ㅗㅏ': 'ㅘ', 'ㅗㅐ': 'ㅙ', 'ㅗㅣ': 'ㅚ', 'ㅜㅓ': 'ㅝ', 'ㅜㅔ': 'ㅞ', 'ㅜㅣ': 'ㅟ', 'ㅡㅣ': 'ㅢ' };
+  const TMIX: Record<string, string> = { 'ㄱㅅ': 'ㄳ', 'ㄴㅈ': 'ㄵ', 'ㄴㅎ': 'ㄶ', 'ㄹㄱ': 'ㄺ', 'ㄹㅁ': 'ㄻ', 'ㄹㅂ': 'ㄼ', 'ㄹㅅ': 'ㄽ', 'ㄹㅌ': 'ㄾ', 'ㄹㅍ': 'ㄿ', 'ㄹㅎ': 'ㅀ', 'ㅂㅅ': 'ㅄ' };
+  const TSPLIT = new Map(Object.entries(TMIX).map(([pair, combined]) => [combined, [...pair]]));
+  const syllable = (l: number, v: number, t: number) => String.fromCodePoint(0xac00 + l * 588 + v * 28 + t);
+
+  function joinHangul(previous: string, character: string): string | null {
+    const vowel = JUNG.indexOf(character);
+    if (CHO.includes(previous) && vowel >= 0) return syllable(CHO.indexOf(previous), vowel, 0);
+    if (JUNG.includes(previous) && VMIX[previous + character]) return VMIX[previous + character];
+    const n = previous.charCodeAt(0) - 0xac00;
+    if (n < 0 || n > 11171) return null;
+    const l = Math.floor(n / 588), v = Math.floor((n % 588) / 28), t = n % 28;
+    if (vowel >= 0) {
+      if (t === 0 && VMIX[JUNG[v] + character]) return syllable(l, JUNG.indexOf(VMIX[JUNG[v] + character]), 0);
+      if (t > 0) {
+        const [keep, move] = TSPLIT.get(JONG[t]) ?? ['', JONG[t]];
+        if (CHO.includes(move)) return syllable(l, v, JONG.indexOf(keep)) + syllable(CHO.indexOf(move), vowel, 0);
+      }
+    } else if (CHO.includes(character)) {
+      if (t === 0 && JONG.includes(character)) return syllable(l, v, JONG.indexOf(character));
+      if (t > 0 && TMIX[JONG[t] + character]) return syllable(l, v, JONG.indexOf(TMIX[JONG[t] + character]));
+    }
+    return null;
+  }
+
+  function initTool(root: HTMLElement) {
+    const layouts = JSON.parse(root.dataset.layouts || '[]') as Layout[];
+    if (!layouts.length) return;
+    const textarea = root.querySelector<HTMLTextAreaElement>('textarea')!;
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panel = root.querySelector<HTMLElement>('[role="tabpanel"]')!;
+    const label = root.querySelector<HTMLElement>('[data-label]')!;
+    const keys = root.querySelector<HTMLElement>('[data-keys]')!;
+    const count = root.querySelector<HTMLElement>('[data-count]')!;
+    const status = root.querySelector<HTMLElement>('[data-status]')!;
+    const help = root.querySelector<HTMLElement>('[data-help]')!;
+    const physical = root.querySelector<HTMLInputElement>('[data-physical]')!;
+    const drafts = new Map<string, string>();
+    const codeMap = new Map<string, KeyDef>();
+    const keyButtons = new Map<HTMLButtonElement, KeyDef>();
+    let active: Layout;
+    let shifted = false;
+    let composing = false;
+    let storageAvailable = true;
+    let shiftButton: HTMLButtonElement | undefined;
+
+    const announce = (message: string) => { status.textContent = message; };
+    const storageStatus = () => storageAvailable
+      ? 'Draft saved on this device.'
+      : 'Browser storage unavailable; draft kept in this tab.';
+    const charFor = (key: KeyDef, shift: boolean) => shift
+      ? (key.s ?? (active.autoUpper ? key.b.toUpperCase() : key.b))
+      : key.b;
+
+    function updateCount() {
+      const length = [...textarea.value].length;
+      count.textContent = `${length} ${length === 1 ? 'character' : 'characters'}`;
+    }
+
+    function saveDraft() {
+      drafts.set(active.slug, textarea.value);
+      try {
+        const key = STORAGE_PREFIX + active.slug;
+        if (textarea.value) localStorage.setItem(key, textarea.value);
+        else localStorage.removeItem(key);
+        storageAvailable = true;
+      } catch {
+        storageAvailable = false;
+      }
+    }
+
+    function restoreDraft() {
+      // In-memory drafts also survive language changes when storage is blocked/full.
+      if (drafts.has(active.slug)) return drafts.get(active.slug)!;
+      let draft = '';
+      try {
+        draft = localStorage.getItem(STORAGE_PREFIX + active.slug) ?? '';
+        storageAvailable = true;
+      } catch {
+        storageAvailable = false;
+      }
+      drafts.set(active.slug, draft);
+      return draft;
+    }
+
+    function edited() {
+      updateCount();
+      saveDraft();
+      announce(storageStatus());
+    }
+
+    function replaceText(text: string, start: number, end: number, focus: boolean) {
+      textarea.setRangeText(text, start, end, 'end');
+      if (focus) textarea.focus({ preventScroll: true });
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    function insert(character: string, focus = true) {
+      let start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      if (active.compose && start === end && start > 0) {
+        const joined = joinHangul(textarea.value[start - 1], character);
+        if (joined !== null) { start -= 1; character = joined; }
+      }
+      replaceText(character, start, end, focus);
+    }
+
+    function backspace(focus: boolean) {
+      let start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      // Delete a complete code point rather than leaving half an emoji behind.
+      if (start === end && start > 0) start -= [...textarea.value.slice(0, start)].pop()!.length;
+      replaceText('', start, end, focus);
+    }
+
+    function setShift(value: boolean) {
+      shifted = value;
+      shiftButton?.setAttribute('aria-pressed', String(value));
+      keyButtons.forEach((key, button) => {
+        const character = charFor(key, shifted);
+        button.textContent = /^\p{M}/u.test(character) ? `◌${character}` : character;
+        button.setAttribute('aria-label', `Insert ${character}`);
+      });
+    }
+
+    function renderKeys() {
+      keys.replaceChildren();
+      keyButtons.clear();
+      shiftButton = undefined;
+      const buttonClass = 'key-3d min-h-[40px] min-w-[2rem] rounded-lg px-2 py-1 text-lg font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brassdark';
+      const addRow = (row: KeyDef[], extra = false) => {
+        const element = document.createElement('div');
+        element.className = 'flex flex-wrap justify-center gap-1.5';
+        if (extra) element.className += ' border-t border-dashed border-ink/15 pt-2';
+        row.forEach((key) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = buttonClass;
+          button.lang = active.langCode || '';
+          keyButtons.set(button, key);
+          button.addEventListener('click', (event) => {
+            insert(charFor(key, shifted), event.detail > 0);
+            setShift(false);
+          });
+          element.append(button);
+        });
+        keys.append(element);
+      };
+      active.rows.forEach((row) => addRow(row));
+      if (active.extra?.length) addRow(active.extra, true);
+
+      const functions = document.createElement('div');
+      functions.className = 'flex flex-wrap justify-center gap-1.5 pt-1';
+      const addFunction = (text: string, action: (focus: boolean) => void) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = buttonClass + ' !text-xs';
+        button.textContent = text;
+        button.addEventListener('click', (event) => action(event.detail > 0));
+        functions.append(button);
+        return button;
+      };
+      if (active.autoUpper || [...active.rows.flat(), ...(active.extra ?? [])].some((key) => key.s)) {
+        shiftButton = addFunction('Shift', () => setShift(!shifted));
+        shiftButton.className += ' aria-pressed:!bg-brass aria-pressed:!bg-none';
+      }
+      addFunction('Space', (focus) => insert(' ', focus)).className += ' flex-1 max-w-xs';
+      addFunction('Backspace', backspace);
+      addFunction('Enter', (focus) => insert('\n', focus));
+      keys.append(functions);
+      keys.setAttribute('aria-label', `${active.name} on-screen keyboard`);
+      setShift(false);
+    }
+
+    function selectLayout(index: number) {
+      const next = layouts[index];
+      if (!next || next === active) return;
+      if (active) saveDraft();
+      active = next;
+      composing = false;
+      textarea.value = restoreDraft();
+      textarea.dir = active.dir;
+      textarea.lang = active.langCode || '';
+      textarea.placeholder = `Type in ${active.name}…`;
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+      label.textContent = `Your ${active.name} text`;
+      tabs.forEach((tab, i) => {
+        tab.setAttribute('aria-selected', String(i === index));
+        tab.tabIndex = i === index ? 0 : -1;
+      });
+      panel.setAttribute('aria-labelledby', tabs[index].id);
+
+      codeMap.clear();
+      const offset = active.rows.length === 4 ? 0 : 1;
+      // Refuse the entire mapping if any row would drop keys or overlap rows.
+      const mappable = (active.rows.length === 3 || active.rows.length === 4)
+        && active.rows.every((row, i) => row.length > 0 && row.length <= CODE_ROWS[offset + i].length);
+      if (mappable) active.rows.forEach((row, i) => {
+        row.forEach((key, j) => codeMap.set(CODE_ROWS[offset + i][j], key));
+      });
+      physical.disabled = !mappable;
+      help.textContent = mappable
+        ? 'Type with your keyboard or tap the keys. Shift shows more characters; uncheck Physical keyboard to use your normal layout.'
+        : 'Use the on-screen keys or your device’s own input method. Physical remapping is unavailable for this layout.';
+      renderKeys();
+      updateCount();
+      announce(`${active.name} selected. ${storageAvailable ? (textarea.value ? 'Draft restored.' : 'Ready to type; drafts save on this device.') : storageStatus()}`);
+    }
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => selectLayout(index));
+      tab.addEventListener('keydown', (event) => {
+        let next = index;
+        if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+        else if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = tabs.length - 1;
+        else return;
+        event.preventDefault();
+        selectLayout(next);
+        tabs[next].focus();
+      });
+    });
+
+    // Keep the editing selection when clicking keys with a mouse. Keyboard users
+    // retain focus on the key they activated and can continue tabbing through it.
+    keys.addEventListener('pointerdown', (event) => {
+      if (!composing && event.pointerType === 'mouse' && event.target instanceof Element && event.target.closest('button')) event.preventDefault();
+    });
+    textarea.addEventListener('input', edited);
+    textarea.addEventListener('compositionstart', () => { composing = true; });
+    textarea.addEventListener('compositionend', () => { composing = false; edited(); });
+    textarea.addEventListener('keydown', (event) => {
+      if (physical.disabled || !physical.checked || composing || event.isComposing
+        || event.key === 'Process' || event.key === 'Dead' || event.keyCode === 229
+        || event.ctrlKey || event.metaKey || event.altKey || event.getModifierState('AltGraph')) return;
+      const key = codeMap.get(event.code);
+      if (!key) return;
+      event.preventDefault();
+      const caps = active.autoUpper && event.getModifierState('CapsLock') && key.b.toLowerCase() !== key.b.toUpperCase();
+      insert(charFor(key, shifted || (caps ? !event.shiftKey : event.shiftKey)));
+      setShift(false);
+    });
+    physical.addEventListener('change', () => announce(physical.checked ? 'Physical remapping enabled.' : 'Using your device’s normal keyboard layout.'));
+
+    root.querySelector('[data-clear]')!.addEventListener('click', () => {
+      textarea.value = '';
+      textarea.focus({ preventScroll: true });
+      edited();
+      announce(`Cleared ${active.name} text. ${storageAvailable ? 'Saved draft removed.' : storageStatus()}`);
+    });
+    root.querySelector('[data-copy]')!.addEventListener('click', async () => {
+      const text = textarea.value;
+      const layout = active;
+      if (!text) { announce('Nothing to copy yet.'); return; }
+      try {
+        await navigator.clipboard.writeText(text);
+        announce(`Copied ${layout.name} text.`);
+      } catch {
+        if (active !== layout || textarea.value !== text) { announce('Copy unavailable. Please try again.'); return; }
+        const start = textarea.selectionStart, end = textarea.selectionEnd;
+        textarea.focus({ preventScroll: true });
+        textarea.select();
+        let copied = false;
+        try { copied = document.execCommand('copy'); } catch { /* Leave text selected for manual copying. */ }
+        if (copied) textarea.setSelectionRange(start, end);
+        announce(copied ? `Copied ${layout.name} text.` : 'Copy unavailable. Text selected; use your device’s Copy command.');
+      }
+    });
+    root.querySelector('[data-download]')!.addEventListener('click', () => {
+      if (!textarea.value) { announce('Nothing to download yet.'); return; }
+      try {
+        const url = URL.createObjectURL(new Blob([textarea.value], { type: 'text/plain;charset=utf-8' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `galexykeyboard-${active.slug}.txt`;
+        try {
+          root.append(link);
+          link.click();
+          announce('Text download started.');
+        } finally {
+          link.remove();
+          window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+      } catch {
+        announce('Download unavailable. Try Copy instead.');
+      }
+    });
+    root.querySelector('[data-share]')!.addEventListener('click', async () => {
+      if (!textarea.value.trim()) { announce('Nothing to share yet.'); return; }
+      const url = new URL(window.location.href);
+      url.hash = new URLSearchParams({ text: textarea.value, lang: active.slug }).toString();
+      try {
+        await navigator.clipboard.writeText(url.toString());
+        announce('Share link copied.');
+      } catch {
+        window.history.replaceState(null, '', url.toString());
+        announce('Share link ready in the address bar.');
+      }
+    });
+
+    const shared = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const requestedLanguage = shared.get('lang');
+    const initialIndex = requestedLanguage ? layouts.findIndex((layout) => layout.slug === requestedLanguage) : -1;
+    selectLayout(initialIndex >= 0 ? initialIndex : 0);
+    const sharedText = shared.get('text');
+    if (sharedText) {
+      textarea.value = sharedText;
+      textarea.setSelectionRange(sharedText.length, sharedText.length);
+      edited();
+      announce(`Shared ${active.name} text loaded.`);
+    }
+  }
+
+  // Custom elements initialize each instance, including after Astro navigation.
+  class QuickKeyboardTool extends HTMLElement {
+    private initialized = false;
+    connectedCallback() {
+      if (this.initialized) return;
+      this.initialized = true;
+      initTool(this);
+    }
+  }
+  if (!customElements.get('quick-keyboard-tool')) customElements.define('quick-keyboard-tool', QuickKeyboardTool);
+</script>

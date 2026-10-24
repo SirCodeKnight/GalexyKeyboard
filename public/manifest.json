@@ -1,0 +1,17 @@
+{
+  "name": "GalexyKeyboard",
+  "short_name": "GalexyKeyboard",
+  "description": "Free online multilingual Unicode keyboards for typing in 15 languages.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f4ec",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

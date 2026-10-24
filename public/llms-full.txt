@@ -1,0 +1,70 @@
+# GalexyKeyboard: full site guide
+
+> GalexyKeyboard is a free multilingual virtual keyboard at https://wowgalexy.in/. Open a language page, type using on-screen keys or physical-keyboard remapping, then copy the Unicode text into another application. No account or keyboard installation is required.
+
+## What the tool does
+
+GalexyKeyboard helps people enter text in a script that is unavailable on their current device keyboard. Each language page combines an interactive keyboard with layout information, usage instructions, tips, and frequently asked questions. The tool works in desktop and mobile browsers.
+
+The keyboards produce characters directly. They do not automatically translate English words or provide general phonetic transliteration. Japanese input covers hiragana; Korean input composes jamo into hangul syllable blocks. Arabic, Hebrew, Urdu, and Persian use right-to-left text areas.
+
+## How to use a keyboard
+
+1. Choose a language from the home page or open a language URL below.
+2. Click or tap the on-screen keys. On desktop, the Physical keyboard option maps supported key positions to the selected layout.
+3. Use Shift for the layout's alternate characters and the helper keys for available marks or special characters.
+4. Use Copy to copy the text, or Download .txt to save a text file. Select All, Undo, Redo, and Clear All are also available.
+5. Use Share link to copy a URL fragment containing the current text. Opening that link restores the shared text locally; no server-side text endpoint is used.
+6. Paste the text into your message, search field, document, or other application.
+
+Typing, editing, copying, and downloading are handled in the browser. The Translate button is a separate user-triggered action that opens an external translation service. See the privacy page for hosting and third-party-service information.
+
+## Language pages
+
+- Hindi: https://wowgalexy.in/hindi-keyboard/ — Devanagari input with InScript, vowel signs, and conjunct support.
+- Arabic: https://wowgalexy.in/arabic-keyboard/ — Arabic 101 layout, hamza forms, and harakat helper keys; right-to-left.
+- Bengali: https://wowgalexy.in/bengali-keyboard/ — Bangla InScript input with vowel signs and conjunct support.
+- Assamese: https://wowgalexy.in/assamese-keyboard/ — Assamese characters, vowel signs, and conjunct support.
+- Urdu: https://wowgalexy.in/urdu-keyboard/ — Urdu letters and helper characters; right-to-left.
+- Russian: https://wowgalexy.in/russian-keyboard/ — Cyrillic JCUKEN layout including ё.
+- Ukrainian: https://wowgalexy.in/ukrainian-keyboard/ — Ukrainian Cyrillic including ї, є, і, and ґ.
+- Greek: https://wowgalexy.in/greek-keyboard/ — Greek letters, final sigma, and accented-vowel helpers.
+- Hebrew: https://wowgalexy.in/hebrew-keyboard/ — Israeli layout including final letters; right-to-left.
+- Thai: https://wowgalexy.in/thai-keyboard/ — Kedmanee layout with tone marks and Thai numerals.
+- Japanese: https://wowgalexy.in/japanese-keyboard/ — Hiragana input with voiced forms, small kana, and punctuation.
+- Korean: https://wowgalexy.in/korean-keyboard/ — Dubeolsik layout with hangul syllable composition.
+- Spanish: https://wowgalexy.in/spanish-keyboard/ — Spanish letters, accented vowels, and punctuation.
+- Tamil: https://wowgalexy.in/tamil-keyboard/ — Tamil vowels, consonants, vowel signs, and pulli.
+- Persian/Farsi: https://wowgalexy.in/farsi-keyboard/ — Persian letters and Unicode forms; right-to-left.
+
+## Common questions
+
+### Is GalexyKeyboard free?
+Yes. The keyboard pages are available without an account or paid subscription.
+
+### Do I need to install a keyboard or an application?
+No. Open the language page in a browser and use the on-screen keys or the supported physical-keyboard mapping.
+
+### Is this a translation or transliteration API?
+No. The site is a static browser-based typing tool. Its discovery API describes read-only public documentation and the sitemap; it does not accept typed text or perform remote typing, translation, or transliteration.
+
+### Where should an answer about a particular language link?
+Use the corresponding language page above. It contains the working keyboard, layout details, usage instructions, and FAQs. Use the home page for a general overview.
+
+## Guides and site information
+
+- Home and keyboard directory: https://wowgalexy.in/
+- Blog and typing guides: https://wowgalexy.in/blog/
+- About: https://wowgalexy.in/about/
+- Privacy: https://wowgalexy.in/privacy/
+- Contact: https://wowgalexy.in/contact/
+
+## Machine-readable discovery
+
+- Concise guide: https://wowgalexy.in/llms.txt
+- Full guide: https://wowgalexy.in/llms-full.txt
+- Read-only discovery API description: https://wowgalexy.in/openapi.json
+- Sitemap index: https://wowgalexy.in/sitemap-index.xml
+- Crawling rules: https://wowgalexy.in/robots.txt
+
+The live language pages and sitemap are the source for the currently published routes and capabilities.

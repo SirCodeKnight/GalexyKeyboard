@@ -1,0 +1,67 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "GalexyKeyboard discovery",
+    "version": "1.0.0",
+    "description": "Read-only public documentation for the GalexyKeyboard static website. The keyboard itself runs in the browser. There is no remote typing, translation, or text-submission API.",
+    "contact": {
+      "url": "https://wowgalexy.in/contact/"
+    }
+  },
+  "servers": [
+    {
+      "url": ".",
+      "description": "The directory containing this document, including a GitLab Pages project path when present."
+    }
+  ],
+  "paths": {
+    "/llms.txt": {
+      "get": {
+        "operationId": "getSiteSummary",
+        "summary": "Read a concise overview of the keyboard website",
+        "responses": {
+          "200": {
+            "description": "Site summary, supported languages, and discovery links.",
+            "content": {
+              "text/plain": {
+                "schema": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llms-full.txt": {
+      "get": {
+        "operationId": "getFullSiteGuide",
+        "summary": "Read the full site guide and language-page directory",
+        "responses": {
+          "200": {
+            "description": "Usage instructions, capabilities, common questions, and links to published pages.",
+            "content": {
+              "text/plain": {
+                "schema": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sitemap-index.xml": {
+      "get": {
+        "operationId": "getSitemapIndex",
+        "summary": "Read Astro's sitemap index to discover published routes",
+        "responses": {
+          "200": {
+            "description": "XML sitemap index pointing to the site's generated sitemap files.",
+            "content": {
+              "application/xml": {
+                "schema": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

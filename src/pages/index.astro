@@ -1,0 +1,214 @@
+---
+import Base from '../layouts/Base.astro';
+import { KEYBOARDS } from '../data/keyboards';
+import AnimeMascot from '../components/AnimeMascot.astro';
+import BlogCard from '../components/BlogCard.astro';
+import QuickKeyboardTool from '../components/QuickKeyboardTool.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const recentPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const site = (Astro.site?.href ?? '').replace(/\/+$/, '');
+const title = 'GalexyKeyboard \u2013 Free Online Multilingual Keyboard: Type in Any Language';
+const description = 'Free online virtual keyboard for 15+ languages: Hindi, Arabic, Bengali, Assamese, Russian, Japanese, Korean, Thai and more. Type, copy and send text in any script. No download.';
+
+const homeFaqs = [
+  { q: 'What is GalexyKeyboard?', a: 'GalexyKeyboard is a free online multilingual virtual keyboard. Pick a language, type with on-screen keys (or your remapped physical keyboard), then copy the text and paste it anywhere \u2013 no download or sign-up required.' },
+  { q: 'Which languages are supported?', a: 'Hindi, Arabic, Bengali, Assamese, Urdu, Russian, Ukrainian, Greek, Hebrew, Thai, Japanese (hiragana), Korean (hangul), Spanish, Tamil and Persian/Farsi \u2013 with more added regularly.' },
+  { q: 'Is it really free?', a: 'Yes. Every keyboard is 100% free with no limits, no account and no downloads. It works in any modern browser on desktop and mobile.' },
+  { q: 'Is my text private?', a: 'Yes. Everything runs locally in your browser. Nothing you type is sent to a server or stored by GalexyKeyboard.' },
+  { q: 'Do right-to-left languages work?', a: 'Yes. Arabic, Hebrew, Urdu and Persian keyboards use fully right-to-left text areas, so your text appears exactly as it will when pasted.' },
+];
+
+const jsonld = [
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'GalexyKeyboard', url: `${site}${base}/` },
+  {
+    '@context': 'https://schema.org', '@type': 'WebApplication',
+    name: 'GalexyKeyboard', url: `${site}${base}/`,
+    applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any (web browser)',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    description,
+  },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: homeFaqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+];
+const keywords = 'online keyboard, virtual keyboard, multilingual keyboard online, assamese keyboard, hindi keyboard, arabic keyboard, russian keyboard, korean keyboard, type in any language';
+---
+<Base title={title} description={description} jsonld={jsonld} keywords={keywords}>
+  <section class="bg-night text-paper overflow-hidden relative">
+    <div class="max-w-content mx-auto px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-12 gap-12 items-center relative z-10">
+      <div class="lg:col-span-7">
+        <p class="text-brass text-sm font-semibold tracking-widest uppercase">Free &middot; No download &middot; Private</p>
+        <h1 class="mt-3 font-display text-4xl sm:text-5xl leading-tight tracking-tight max-w-3xl">
+          Type in any language, right from your browser.
+        </h1>
+        <p class="mt-5 max-w-2xl text-lg text-paper/80 leading-relaxed">
+          GalexyKeyboard is a free online multilingual keyboard. Pick a language below, type with the on-screen keys or your own keyboard, then copy the text and send it anywhere: WhatsApp, email, search, documents.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#keyboards" class="rounded-lg bg-brass text-ink px-5 py-2.5 font-medium hover:bg-brass/90 transition">Choose a keyboard</a>
+          <a href={`${base}/about/`} class="rounded-lg border border-paper/25 px-5 py-2.5 hover:bg-paper/10 transition">How it works</a>
+        </div>
+      </div>
+      <div class="lg:col-span-5 hidden lg:flex items-center justify-center p-4 relative animate-bounce-slow" style="perspective: 1000px;">
+        <div class="hero-3d-keyboard relative w-[440px] h-[240px] bg-slate-950/95 border border-slate-800/80 rounded-2xl p-4 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8),_0_30px_60px_-30px_rgba(0,0,0,0.9),_inset_0_1px_1px_rgba(255,255,255,0.05)] select-none hover:rotate-x-[18deg] hover:rotate-y-[-8deg] transition-all duration-700 ease-out" style="transform: rotateX(25deg) rotateY(-15deg) rotateZ(5deg); transform-style: preserve-3d;">
+          <div class="space-y-1.5">
+            <div class="flex gap-1 justify-center">
+              {['क', 'ا', 'A', 'Ω', 'あ', '한', 'Ñ', 'த', 'ف', 'Я'].map((c, i) => (
+                <div class="w-8 h-8 rounded bg-slate-900 border border-slate-800 shadow-[0_3px_0_0_#020617] text-slate-400 font-bold flex items-center justify-center text-xs hero-key-animate" style={`animation-delay: ${i*0.2}s`}>{c}</div>
+              ))}
+            </div>
+            <div class="flex gap-1 justify-center pl-2">
+              {['د', 'भ', 'S', 'λ', 'い', '글', '¿', 'ம', 'ی', 'Щ'].map((c, i) => (
+                <div class="w-8 h-8 rounded bg-slate-900 border border-slate-800 shadow-[0_3px_0_0_#020617] text-slate-400 font-bold flex items-center justify-center text-xs hero-key-animate" style={`animation-delay: ${0.5 + i*0.25}s`}>{c}</div>
+              ))}
+            </div>
+            <div class="flex gap-1 justify-center pr-2">
+              {['Shift', 'ح', 'Z', 'π', 'う', '수', '¡', 'ந', 'ر', 'Enter'].map((c, i) => (
+                <div class={`h-8 rounded bg-slate-900 border border-slate-800 shadow-[0_3px_0_0_#020617] text-slate-400 font-medium flex items-center justify-center text-[10px] hero-key-animate ${c==='Shift' || c==='Enter' ? 'px-2 font-semibold text-slate-500 bg-slate-900/70' : 'w-8 text-slate-400'}`} style={`animation-delay: ${1.0 + i*0.3}s`}>{c}</div>
+              ))}
+            </div>
+            <div class="flex gap-1 justify-center">
+              <div class="w-10 h-8 rounded bg-slate-900/70 border border-slate-800 shadow-[0_3px_0_0_#020617] text-slate-600 font-bold flex items-center justify-center text-[10px]">Ctrl</div>
+              <div class="w-24 h-8 rounded bg-slate-900 border border-slate-800 shadow-[0_3px_0_0_#020617] hero-key-animate flex items-center justify-center" style="animation-delay: 1.5s">
+                <span class="w-10 h-0.5 bg-slate-800 rounded-full"></span>
+              </div>
+              <div class="w-10 h-8 rounded bg-slate-900/70 border border-slate-800 shadow-[0_3px_0_0_#020617] text-slate-600 font-bold flex items-center justify-center text-[10px]">Alt</div>
+            </div>
+          </div>
+          <div class="absolute -inset-1 bg-gradient-to-r from-brass to-brassdark rounded-2xl blur-xl opacity-20 -z-10 animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-content mx-auto px-4 sm:px-6 -mt-8 relative z-10">
+    <QuickKeyboardTool keyboards={KEYBOARDS} />
+  </section>
+
+  <section class="max-w-content mx-auto px-4 sm:px-6 py-10">
+    <div class="rounded-2xl border border-ink/10 bg-cream/70 p-5 sm:p-6">
+      <h2 class="font-display text-2xl">Free multilingual keyboard: direct answer</h2>
+      <p class="mt-3 max-w-4xl leading-relaxed text-ink/80">
+        GalexyKeyboard is a browser-based Unicode typing tool for 15 language layouts. Choose a language above, type with the on-screen keys or a supported physical keyboard mapping, then copy or download the result. The tool does not require an account or installation, and your typed text stays in the browser. Each language page documents its national layout, script-specific characters, practical typing steps, and answers to common questions.
+      </p>
+      <div class="mt-5 overflow-x-auto rounded-xl border border-ink/10 bg-white">
+        <table class="w-full min-w-[620px] text-sm">
+          <caption class="sr-only">GalexyKeyboard capability summary</caption>
+          <thead class="bg-cream/80 text-left">
+            <tr class="border-b border-ink/10">
+              <th scope="col" class="px-4 py-3 font-semibold">Capability</th>
+              <th scope="col" class="px-4 py-3 font-semibold">What you get</th>
+              <th scope="col" class="px-4 py-3 font-semibold">Where it runs</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-ink/5">
+            <tr><th scope="row" class="px-4 py-3 text-left font-medium">Input</th><td class="px-4 py-3">15 real script layouts, including RTL support</td><td class="px-4 py-3">Modern desktop and mobile browsers</td></tr>
+            <tr><th scope="row" class="px-4 py-3 text-left font-medium">Output</th><td class="px-4 py-3">Unicode text with one-click Copy and UTF-8 .txt download</td><td class="px-4 py-3">Local browser session</td></tr>
+            <tr><th scope="row" class="px-4 py-3 text-left font-medium">Privacy</th><td class="px-4 py-3">No sign-up and no remote text submission</td><td class="px-4 py-3">Your device</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    @keyframes hero-keypress {
+      0%, 100% {
+        transform: translateY(0);
+        box-shadow: 0 3px 0 0 #020617;
+        background-color: #0f172a;
+        border-color: #1e293b;
+      }
+      50% {
+        transform: translateY(2px);
+        box-shadow: 0 1px 0 0 #020617;
+        background-color: #1e293b;
+        border-color: #d97706; /* brassdark */
+        color: #ffffff;
+      }
+    }
+    .hero-key-animate {
+      animation: hero-keypress 4s infinite ease-in-out;
+    }
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .animate-bounce-slow {
+      animation: bounce-slow 6s ease-in-out infinite;
+    }
+  </style>
+
+  <section id="keyboards" class="max-w-content mx-auto px-4 sm:px-6 py-14">
+    <h2 class="font-display text-3xl">All language keyboards</h2>
+    <p class="mt-2 text-ink/70">Every keyboard is a real layout, not transliteration, with copy, download and physical-keyboard remapping built in.</p>
+    <ul class="mt-12 grid gap-y-12 gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
+      {KEYBOARDS.map((k) => (
+        <li>
+          <a href={`${base}/${k.slug}/`} class="group block relative rounded-2xl border border-ink/10 bg-white pt-8 pb-5 px-5 hover:border-brass/60 hover:shadow-card transition overflow-visible">
+            {/* Pop-out 3D Avatar */}
+            <div class="absolute -top-8 right-4 w-16 h-16 select-none pointer-events-none z-10 transition-transform duration-300 group-hover:-translate-y-1">
+              <div class="relative w-full h-full overflow-visible">
+                <AnimeMascot countryCode={k.countryCode} slug={k.slug} />
+              </div>
+            </div>
+
+            <p class="text-2xl pr-14" dir={k.dir}>{k.native}</p>
+            <p class="mt-2 font-semibold group-hover:text-brassdark transition-colors pr-14">{k.name} keyboard</p>
+            <p class="mt-1 text-sm text-ink/60 leading-snug pr-12">{k.tagline}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="bg-cream border-y border-ink/10">
+    <div class="max-w-content mx-auto px-4 sm:px-6 py-14 grid gap-8 sm:grid-cols-3">
+      {[
+        ['Real layouts', 'Standard national layouts (InScript, \u0419\u0426\u0423\u041a\u0415\u041d, Kedmanee, Dubeolsik\u2026) so your muscle memory and your text are both correct.'],
+        ['Copy & send anywhere', 'One-click copy to clipboard, or download as .txt. Paste into chats, documents, search engines and social media.'],
+        ['Private by design', 'Typing happens entirely in your browser. Nothing is uploaded, logged or stored \u2013 ever.'],
+      ].map(([h, t]) => (
+        <div>
+          <h3 class="font-display text-xl">{h}</h3>
+          <p class="mt-2 text-ink/75 leading-relaxed text-sm">{t}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="max-w-content mx-auto px-4 sm:px-6 py-14">
+    <div class="flex items-end justify-between mb-8">
+      <div>
+        <h2 class="font-display text-3xl">From the blog</h2>
+        <p class="mt-2 text-ink/70">Typing tips, privacy guides, and language insights.</p>
+      </div>
+      <a href={`${base}/blog/`} class="hidden sm:inline-block text-sm font-semibold text-brassdark hover:underline mb-1">View all articles &rarr;</a>
+    </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {recentPosts.map((post) => (
+        <BlogCard post={post} />
+      ))}
+    </div>
+    <div class="mt-6 sm:hidden text-center">
+      <a href={`${base}/blog/`} class="inline-block text-sm font-semibold text-brassdark hover:underline">View all articles &rarr;</a>
+    </div>
+  </section>
+
+  <section class="max-w-content mx-auto px-4 sm:px-6 py-14 border-t border-ink/10">
+    <h2 class="font-display text-3xl">Frequently asked questions</h2>
+    <div class="mt-6 divide-y divide-ink/10 border-y border-ink/10 max-w-3xl">
+      {homeFaqs.map((f) => (
+        <details class="group py-4">
+          <summary class="cursor-pointer list-none flex items-baseline justify-between gap-4 font-medium">
+            <h3 class="text-base font-medium">{f.q}</h3>
+            <span class="text-brassdark transition group-open:rotate-45" aria-hidden="true">+</span>
+          </summary>
+          <p class="mt-2 leading-relaxed text-ink/80">{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+</Base>

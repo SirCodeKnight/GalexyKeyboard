@@ -1,0 +1,51 @@
+---
+import Base from '../../layouts/Base.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const site = (Astro.site?.href ?? '').replace(/\/+$/, '');
+const pageUrl = `${site}${base}/blog/`;
+
+const jsonld = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'GalexyKeyboard Blog',
+    description: 'Articles, tutorials and updates on typing in multiple languages online.',
+    url: pageUrl,
+  }
+];
+---
+
+<Base
+  title="Blog \u2013 GalexyKeyboard"
+  description="Articles, typing tips, and guides on using international keyboards and writing systems."
+  jsonld={jsonld}
+>
+  <div class="max-w-[1536px] mx-auto px-4 sm:px-6 py-10 lg:py-16">
+    <header class="max-w-3xl mb-12">
+      <h1 class="font-display text-4xl sm:text-5xl tracking-tight text-ink">
+        The <span class="text-brassdark">GalexyKeyboard</span> Blog
+      </h1>
+      <p class="mt-4 text-lg text-ink/70 leading-relaxed">
+        Insights on language, writing systems, digital privacy, and how to type beautifully in any script.
+      </p>
+    </header>
+
+    {posts.length > 0 ? (
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        {posts.map((post) => (
+          <BlogCard post={post} />
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-20 bg-cream/50 rounded-2xl border border-ink/10">
+        <p class="text-ink/60 text-lg">No posts yet. Check back soon!</p>
+      </div>
+    )}
+  </div>
+</Base>

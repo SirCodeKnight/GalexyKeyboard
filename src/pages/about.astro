@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+---
+<Base title="About GalexyKeyboard \u2013 Free Online Multilingual Keyboard" description="What GalexyKeyboard is, how it works, and why every keyboard uses real national layouts with full privacy.">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-14">
+    <h1 class="font-display text-4xl">About GalexyKeyboard</h1>
+    <div class="mt-6 space-y-5 leading-relaxed text-ink/85">
+      <p>GalexyKeyboard is a free online multilingual virtual keyboard. It exists for one simple, common problem: you need to type in a language your device's keyboard does not support (to message family, search the web, fill in a form, or study) and installing system keyboards is slow, confusing, or not allowed on the machine you are using.</p>
+      <p>Every keyboard on this site is a <strong>real national layout</strong> (InScript for Indian scripts, \u0419\u0426\u0423\u041a\u0415\u041d for Russian, Kedmanee for Thai, Dubeolsik for Korean, the Arabic 101 layout, and so on) rather than transliteration. That means the text you produce is genuine, correctly encoded script that pastes cleanly everywhere and matches what native speakers type and search for.</p>
+      <p>Everything runs locally in your browser. There is no account, no download, and no server that ever sees your text. Type, copy, paste: that is the whole product.</p>
+      <p>New languages are added regularly. If yours is missing, <a href={`${base}/contact/`} class="text-brassdark underline">tell us</a> and it moves up the list.</p>
+    </div>
+  </div>
+</Base>

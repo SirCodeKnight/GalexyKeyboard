@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+
+const contactEmail = 'contact@wowgalexy.in';
+const site = (Astro.site?.href ?? 'https://wowgalexy.in').replace(/\/+$/, '');
+const jsonld = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: 'Contact GalexyKeyboard',
+    url: `${site}/contact/`,
+    mainEntity: {
+      '@type': 'Organization',
+      name: 'GalexyKeyboard',
+      url: `${site}/`,
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: contactEmail,
+        availableLanguage: ['English', 'Hindi', 'Bengali', 'Assamese', 'Arabic'],
+      },
+    },
+  },
+];
+---
+<Base title="Contact \u2013 GalexyKeyboard" description="Contact GalexyKeyboard: request a new language keyboard, report a layout issue, or ask a question." jsonld={jsonld}>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-14">
+    <h1 class="font-display text-4xl">Contact</h1>
+    <div class="mt-6 space-y-5 leading-relaxed text-ink/85">
+      <p>Missing a language? Found a key in the wrong place? We want to know. Layout correctness is the whole point of this tool.</p>
+      <p>Open an issue on our project tracker, or email <a href={`mailto:${contactEmail}`} class="text-brassdark underline">{contactEmail}</a>.</p>
+      <p>When reporting a layout issue, please include the language, the key you expected, and the key you got. A screenshot helps.</p>
+    </div>
+  </div>
+</Base>

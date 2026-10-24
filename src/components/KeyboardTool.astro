@@ -1,0 +1,353 @@
+---
+import type { KeyboardDef } from '../data/keyboards';
+
+interface Props { kb: KeyboardDef }
+const { kb } = Astro.props;
+const payload = JSON.stringify({
+  rows: kb.rows,
+  extra: kb.extra ?? null,
+  autoUpper: !!kb.autoUpper,
+  compose: !!kb.compose,
+});
+---
+<section
+  class="kb-tool rounded-2xl bg-white border border-ink/10 shadow-card p-4 sm:p-6"
+  data-kb={payload}
+  aria-label={`${kb.name} virtual keyboard`}
+>
+  <label class="sr-only" for={`ta-${kb.slug}`}>Your {kb.name} text</label>
+  <textarea
+    id={`ta-${kb.slug}`}
+    class="kb-text w-full h-40 sm:h-44 resize-y rounded-xl border border-ink/15 bg-cream/60 px-4 py-3 text-xl leading-relaxed focus:outline-none focus:ring-2 focus:ring-brass/60 focus:border-brass/60 shadow-inner"
+    dir={kb.dir}
+    placeholder={`Type in ${kb.name}\u2026`}
+    spellcheck="false"
+    autocomplete="off"
+  ></textarea>
+
+  <div class="mt-4 grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-3">
+    <button type="button" class="kb-select-all btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Select All</button>
+    <button type="button" class="kb-copy btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-gradient-to-r from-brass to-brassdark !text-ink !shadow-[0_4px_0_0_#92400e] !border-amber-700/50">Copy</button>
+    <button type="button" class="kb-undo btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Undo</button>
+    <button type="button" class="kb-redo btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Redo</button>
+    <button type="button" class="kb-clear btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Clear All</button>
+    <button type="button" class="kb-translate btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition bg-gradient-to-r from-blue-600 to-indigo-700 !text-white !shadow-[0_4px_0_0_#1e3a8a] !border-blue-800">Translate</button>
+    <button type="button" class="kb-dl btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Download .txt</button>
+    <button type="button" class="kb-share btn-cinematic-3d px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Share link</button>
+    <span class="kb-status text-xs text-sage min-w-[4rem]" role="status" aria-live="polite"></span>
+
+    <div class="col-span-2 sm:ml-auto flex items-center justify-between sm:justify-end gap-5 text-xs text-ink/60 w-full sm:w-auto mt-2 sm:mt-0">
+      <label class="kb-phys-wrap hidden sm:flex items-center gap-1.5 cursor-pointer select-none">
+        <input type="checkbox" class="kb-phys accent-brassdark" checked /> Physical keyboard
+      </label>
+      <span><span class="kb-count">0</span> chars</span>
+    </div>
+  </div>
+
+  <div class="kb-rows mt-6 space-y-2.5 select-none" dir="ltr"></div>
+</section>
+
+<script>
+  // ---- Hangul (Korean) composition ------------------------------------
+  const CHO = [...'\u3131\u3132\u3134\u3137\u3138\u3139\u3141\u3142\u3143\u3145\u3146\u3147\u3148\u3149\u314a\u314b\u314c\u314d\u314e'];
+  const JUNG = [...'\u314f\u3150\u3151\u3152\u3153\u3154\u3155\u3156\u3157\u3158\u3159\u315a\u315b\u315c\u315d\u315e\u315f\u3160\u3161\u3162\u3163'];
+  const JONG = ['', ...'\u3131\u3132\u3133\u3134\u3135\u3136\u3137\u3139\u313a\u313b\u313c\u313d\u313e\u313f\u3140\u3141\u3142\u3144\u3145\u3146\u3147\u3148\u314a\u314b\u314c\u314d\u314e'];
+  const VMIX: Record<string, string> = { '\u3157\u314f': '\u3158', '\u3157\u3150': '\u3159', '\u3157\u3163': '\u315a', '\u315c\u3153': '\u315d', '\u315c\u3154': '\u315e', '\u315c\u3163': '\u315f', '\u3161\u3163': '\u3162' };
+  const TMIX: Record<string, string> = { '\u3131\u3145': '\u3133', '\u3134\u3148': '\u3135', '\u3134\u314e': '\u3136', '\u3139\u3131': '\u313a', '\u3139\u3141': '\u313b', '\u3139\u3142': '\u313c', '\u3139\u3145': '\u313d', '\u3139\u314c': '\u313e', '\u3139\u314d': '\u313f', '\u3139\u314e': '\u3140', '\u3142\u3145': '\u3144' };
+  const TSPLIT: Record<string, [string, string]> = { '\u3133': ['\u3131', '\u3145'], '\u3135': ['\u3134', '\u3148'], '\u3136': ['\u3134', '\u314e'], '\u313a': ['\u3139', '\u3131'], '\u313b': ['\u3139', '\u3141'], '\u313c': ['\u3139', '\u3142'], '\u313d': ['\u3139', '\u3145'], '\u313e': ['\u3139', '\u314c'], '\u313f': ['\u3139', '\u314d'], '\u3140': ['\u3139', '\u314e'], '\u3144': ['\u3142', '\u3145'] };
+  const syl = (l: number, v: number, t: number) => String.fromCodePoint(0xac00 + l * 588 + v * 28 + t);
+
+  function hangulJoin(prev: string, ch: string): string | null {
+    const isV = JUNG.includes(ch);
+    const isC = CHO.includes(ch);
+    if (!prev) return null;
+    if (CHO.includes(prev) && isV) return syl(CHO.indexOf(prev), JUNG.indexOf(ch), 0);
+    if (JUNG.includes(prev) && isV && VMIX[prev + ch]) return VMIX[prev + ch];
+    if (prev >= '\uac00' && prev <= '\ud7a3') {
+      const n = prev.codePointAt(0)! - 0xac00;
+      const l = (n / 588) | 0, v = ((n % 588) / 28) | 0, t = n % 28;
+      if (isV) {
+        if (t === 0 && VMIX[JUNG[v] + ch]) return syl(l, JUNG.indexOf(VMIX[JUNG[v] + ch]), 0);
+        if (t > 0) {
+          const [keep, move] = TSPLIT[JONG[t]] ?? ['', JONG[t]];
+          if (CHO.includes(move)) {
+            const head = syl(l, v, keep ? JONG.indexOf(keep) : 0);
+            return head + syl(CHO.indexOf(move), JUNG.indexOf(ch), 0);
+          }
+        }
+      } else if (isC) {
+        if (t === 0 && JONG.includes(ch)) return syl(l, v, JONG.indexOf(ch));
+        if (t > 0 && TMIX[JONG[t] + ch]) return syl(l, v, JONG.indexOf(TMIX[JONG[t] + ch]));
+      }
+    }
+    return null;
+  }
+
+  // ---- Physical keyboard mapping ---------------------------------------
+  const CODE_ROWS = [
+    ['Backquote', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal'],
+    ['KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight', 'Backslash'],
+    ['KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote'],
+    ['KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash'],
+  ];
+
+  interface KeyDef { b: string; s?: string }
+
+  function initTool(root: HTMLElement) {
+    const kb = JSON.parse(root.dataset.kb || '{}') as {
+      rows: KeyDef[][]; extra: KeyDef[] | null; autoUpper: boolean; compose: boolean;
+    };
+    const ta = root.querySelector<HTMLTextAreaElement>('.kb-text')!;
+    const rowsEl = root.querySelector<HTMLElement>('.kb-rows')!;
+    const status = root.querySelector<HTMLElement>('.kb-status')!;
+    const count = root.querySelector<HTMLElement>('.kb-count')!;
+    const phys = root.querySelector<HTMLInputElement>('.kb-phys')!;
+    let shifted = false;
+
+    // History stack state for Undo/Redo
+    const undoStack: { val: string; sStart: number; sEnd: number }[] = [];
+    const redoStack: { val: string; sStart: number; sEnd: number }[] = [];
+
+    const shiftChar = (k: KeyDef) => k.s ?? (kb.autoUpper ? k.b.toUpperCase() : k.b);
+    const charFor = (k: KeyDef, useShift: boolean) => (useShift ? shiftChar(k) : k.b);
+
+    const updateCount = () => { count.textContent = String([...ta.value].length); };
+
+    function saveState() {
+      const last = undoStack[undoStack.length - 1];
+      if (!last || last.val !== ta.value) {
+        undoStack.push({
+          val: ta.value,
+          sStart: ta.selectionStart || 0,
+          sEnd: ta.selectionEnd || 0
+        });
+        if (undoStack.length > 100) undoStack.shift();
+        redoStack.length = 0; // Clear redo on fresh input
+        updateHistoryButtons();
+      }
+    }
+
+    function performUndo() {
+      if (undoStack.length > 1) {
+        const curr = undoStack.pop()!;
+        redoStack.push(curr);
+        const prev = undoStack[undoStack.length - 1];
+        ta.value = prev.val;
+        ta.setSelectionRange(prev.sStart, prev.sEnd);
+        ta.focus();
+        updateCount();
+        updateHistoryButtons();
+      }
+    }
+
+    function performRedo() {
+      if (redoStack.length > 0) {
+        const next = redoStack.pop()!;
+        undoStack.push(next);
+        ta.value = next.val;
+        ta.setSelectionRange(next.sStart, next.sEnd);
+        ta.focus();
+        updateCount();
+        updateHistoryButtons();
+      }
+    }
+
+    function updateHistoryButtons() {
+      const uBtn = root.querySelector<HTMLButtonElement>('.kb-undo')!;
+      const rBtn = root.querySelector<HTMLButtonElement>('.kb-redo')!;
+      uBtn.disabled = undoStack.length <= 1;
+      rBtn.disabled = redoStack.length === 0;
+      uBtn.classList.toggle('opacity-50', uBtn.disabled);
+      uBtn.classList.toggle('pointer-events-none', uBtn.disabled);
+      rBtn.classList.toggle('opacity-50', rBtn.disabled);
+      rBtn.classList.toggle('pointer-events-none', rBtn.disabled);
+    }
+
+    // Initial state push
+    undoStack.push({ val: ta.value, sStart: 0, sEnd: 0 });
+    updateHistoryButtons();
+
+    function insert(ch: string) {
+      const s = ta.selectionStart ?? ta.value.length;
+      const e = ta.selectionEnd ?? s;
+      if (kb.compose && s === e && s > 0) {
+        const prev = ta.value[s - 1];
+        const joined = hangulJoin(prev, ch);
+        if (joined !== null) {
+          ta.value = ta.value.slice(0, s - 1) + joined + ta.value.slice(e);
+          const p = s - 1 + joined.length;
+          ta.setSelectionRange(p, p); ta.focus(); updateCount();
+          saveState();
+          return;
+        }
+      }
+      ta.value = ta.value.slice(0, s) + ch + ta.value.slice(e);
+      const p = s + ch.length;
+      ta.setSelectionRange(p, p); ta.focus(); updateCount();
+      saveState();
+    }
+
+    function backspace() {
+      const s = ta.selectionStart ?? 0, e = ta.selectionEnd ?? 0;
+      if (s === e && s > 0) { ta.value = ta.value.slice(0, s - 1) + ta.value.slice(e); ta.setSelectionRange(s - 1, s - 1); }
+      else { ta.value = ta.value.slice(0, s) + ta.value.slice(e); ta.setSelectionRange(s, s); }
+      ta.focus(); updateCount();
+      saveState();
+    }
+
+    // ---- Render on-screen keys ----
+    const keyBtn = (k: KeyDef) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'kb-key min-w-[2.3rem] sm:min-w-[2.8rem] h-11 sm:h-12 px-1 rounded-xl text-lg sm:text-xl font-bold key-3d flex items-center justify-center';
+      b.textContent = charFor(k, shifted);
+      b.addEventListener('click', () => { insert(charFor(k, shifted)); if (shifted) setShift(false); });
+      (b as any)._key = k;
+      return b;
+    };
+
+    kb.rows.forEach((row) => {
+      const div = document.createElement('div');
+      div.className = 'flex flex-wrap justify-center gap-1.5 sm:gap-2';
+      row.forEach((k) => div.appendChild(keyBtn(k)));
+      rowsEl.appendChild(div);
+    });
+
+    if (kb.extra) {
+      const div = document.createElement('div');
+      div.className = 'flex flex-wrap justify-center gap-1.5 sm:gap-2 pt-3 mt-2 border-t border-dashed border-ink/15';
+      kb.extra.forEach((k) => div.appendChild(keyBtn(k)));
+      rowsEl.appendChild(div);
+    }
+
+    // ---- Function key row ----
+    const hasShiftLayer = kb.autoUpper || kb.rows.some((r) => r.some((k) => k.s));
+    const fnRow = document.createElement('div');
+    fnRow.className = 'flex flex-wrap justify-center gap-1.5 sm:gap-2 pt-3';
+    const mkFn = (label: string, cls: string, fn: () => void) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = `h-11 sm:h-12 px-5 rounded-xl text-sm font-semibold key-3d ${cls}`;
+      b.textContent = label;
+      b.addEventListener('click', fn);
+      return b;
+    };
+    let shiftBtn: HTMLButtonElement | null = null;
+    function setShift(v: boolean) {
+      shifted = v;
+      shiftBtn?.classList.toggle('!bg-gradient-to-b', v);
+      shiftBtn?.classList.toggle('from-brass', v);
+      shiftBtn?.classList.toggle('to-brassdark', v);
+      shiftBtn?.classList.toggle('!text-ink', v);
+      rowsEl.querySelectorAll<HTMLButtonElement>('.kb-key').forEach((b) => {
+        b.textContent = charFor((b as any)._key, shifted);
+      });
+    }
+    if (hasShiftLayer) {
+      shiftBtn = mkFn('\u21e7 Shift', 'bg-white', () => setShift(!shifted));
+      fnRow.appendChild(shiftBtn);
+    }
+    fnRow.appendChild(mkFn('Space', 'bg-white flex-1 max-w-xs', () => insert(' ')));
+    fnRow.appendChild(mkFn('\u232b Backspace', 'bg-white', backspace));
+    fnRow.appendChild(mkFn('\u23ce Enter', 'bg-white', () => insert('\n')));
+    rowsEl.appendChild(fnRow);
+
+    // ---- Action Buttons Event Listeners ----
+    const flash = (msg: string) => { status.textContent = msg; setTimeout(() => { if (status.textContent === msg) status.textContent = ''; }, 2000); };
+
+    root.querySelector('.kb-select-all')!.addEventListener('click', () => {
+      ta.select();
+      ta.focus();
+    });
+
+    root.querySelector('.kb-copy')!.addEventListener('click', async () => {
+      if (!ta.value.trim()) { flash('Nothing to copy!'); return; }
+      try { await navigator.clipboard.writeText(ta.value); flash('Copied!'); }
+      catch { ta.select(); document.execCommand('copy'); flash('Copied!'); }
+    });
+
+    root.querySelector('.kb-undo')!.addEventListener('click', performUndo);
+    root.querySelector('.kb-redo')!.addEventListener('click', performRedo);
+
+    root.querySelector('.kb-clear')!.addEventListener('click', () => {
+      ta.value = ''; updateCount(); ta.focus();
+      saveState();
+    });
+
+    root.querySelector('.kb-translate')!.addEventListener('click', () => {
+      const txt = ta.value.trim();
+      if (!txt) { flash('Nothing to translate!'); return; }
+      const url = `https://translate.google.com/?sl=auto&tl=en&text=${encodeURIComponent(txt)}&op=translate`;
+      window.open(url, '_blank');
+    });
+
+    root.querySelector('.kb-dl')!.addEventListener('click', () => {
+      if (!ta.value.trim()) { flash('Nothing to download!'); return; }
+      const url = URL.createObjectURL(new Blob([ta.value], { type: 'text/plain;charset=utf-8' }));
+      const a = Object.assign(document.createElement('a'), { href: url, download: 'galexykeyboard.txt' });
+      a.click(); URL.revokeObjectURL(url);
+    });
+
+    const sharedText = new URLSearchParams(window.location.hash.replace(/^#/, '')).get('text');
+    if (sharedText) {
+      try {
+        ta.value = sharedText;
+        ta.setSelectionRange(ta.value.length, ta.value.length);
+        updateCount();
+        saveState();
+        flash('Shared text loaded');
+      } catch { /* Ignore malformed or unavailable shared fragments. */ }
+    }
+
+    root.querySelector('.kb-share')!.addEventListener('click', async () => {
+      if (!ta.value.trim()) { flash('Nothing to share!'); return; }
+      const url = new URL(window.location.href);
+      url.hash = new URLSearchParams({ text: ta.value }).toString();
+      try {
+        await navigator.clipboard.writeText(url.toString());
+        flash('Share link copied!');
+      } catch {
+        window.history.replaceState(null, '', url.toString());
+        flash('Share link ready in the address bar');
+      }
+    });
+
+    ta.addEventListener('input', () => {
+      updateCount();
+      saveState();
+    });
+
+    // ---- Physical keyboard remapping & Visual Feedback ----
+    const mappable = kb.rows.length <= 4;
+    if (!mappable) root.querySelector('.kb-phys-wrap')?.classList.add('hidden');
+    const offset = kb.rows.length >= 4 ? 0 : 1;
+    const codeMap = new Map<string, KeyDef>();
+    if (mappable) {
+      kb.rows.forEach((row, i) => {
+        const codes = CODE_ROWS[offset + i] || [];
+        row.forEach((k, j) => { if (codes[j]) codeMap.set(codes[j], k); });
+      });
+    }
+
+    ta.addEventListener('keydown', (e) => {
+      if (!mappable || !phys.checked || e.ctrlKey || e.metaKey || e.altKey) return;
+      const k = codeMap.get(e.code);
+      if (!k) return;
+      e.preventDefault();
+
+      // Find the visual key button and trigger 3D press effect
+      const keys = [...rowsEl.querySelectorAll<HTMLButtonElement>('.kb-key')];
+      const targetBtn = keys.find((b) => (b as any)._key === k);
+      if (targetBtn) {
+        targetBtn.classList.add('active-press');
+        setTimeout(() => targetBtn.classList.remove('active-press'), 100);
+      }
+
+      insert(charFor(k, e.shiftKey));
+    });
+
+    updateCount();
+  }
+
+  document.querySelectorAll<HTMLElement>('.kb-tool').forEach(initTool);
+</script>

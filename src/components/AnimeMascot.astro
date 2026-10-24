@@ -1,0 +1,125 @@
+---
+interface Props {
+  countryCode: string;
+  slug: string;
+}
+
+const { countryCode, slug } = Astro.props;
+
+interface MascotTheme {
+  hair: string;
+  shirt: string;
+  accent: string;
+  eyes: string;
+  bgGradStart: string;
+  bgGradEnd: string;
+}
+
+const THEMES: Record<string, MascotTheme> = {
+  in: { hair: '#E06A1B', shirt: '#FFFFFF', accent: '#138808', eyes: '#0b3c5d', bgGradStart: '#FF9933', bgGradEnd: '#138808' }, // India (Hindi, Assamese, Tamil)
+  sa: { hair: '#334155', shirt: '#1E293B', accent: '#006C35', eyes: '#1E293B', bgGradStart: '#006C35', bgGradEnd: '#0f172a' }, // Saudi Arabia (Arabic)
+  bd: { hair: '#1E293B', shirt: '#FFFFFF', accent: '#F42A41', eyes: '#006A4E', bgGradStart: '#006A4E', bgGradEnd: '#F42A41' }, // Bangladesh (Bengali)
+  pk: { hair: '#1E293B', shirt: '#FFFFFF', accent: '#01411C', eyes: '#01411C', bgGradStart: '#01411C', bgGradEnd: '#020617' }, // Pakistan (Urdu)
+  ru: { hair: '#94A3B8', shirt: '#0039A6', accent: '#D52B1E', eyes: '#0039A6', bgGradStart: '#0039A6', bgGradEnd: '#D52B1E' }, // Russia (Russian)
+  ua: { hair: '#FACC15', shirt: '#FFFFFF', accent: '#0057B7', eyes: '#0057B7', bgGradStart: '#0057B7', bgGradEnd: '#FACC15' }, // Ukraine (Ukrainian)
+  gr: { hair: '#94A3B8', shirt: '#0D5EAF', accent: '#FFFFFF', eyes: '#0D5EAF', bgGradStart: '#0D5EAF', bgGradEnd: '#1e293b' }, // Greece (Greek)
+  il: { hair: '#94A3B8', shirt: '#FFFFFF', accent: '#0038A8', eyes: '#0038A8', bgGradStart: '#0038A8', bgGradEnd: '#1e293b' }, // Israel (Hebrew)
+  th: { hair: '#334155', shirt: '#F8FAFC', accent: '#A51931', eyes: '#2D2A4A', bgGradStart: '#A51931', bgGradEnd: '#2D2A4A' }, // Thailand (Thai)
+  jp: { hair: '#1E293B', shirt: '#FFFFFF', accent: '#BC002D', eyes: '#BC002D', bgGradStart: '#BC002D', bgGradEnd: '#FDA4AF' }, // Japan (Japanese)
+  kr: { hair: '#1E293B', shirt: '#FFFFFF', accent: '#0F64CD', eyes: '#CD2E3A', bgGradStart: '#CD2E3A', bgGradEnd: '#0F64CD' }, // South Korea (Korean)
+  es: { hair: '#D97706', shirt: '#EF4444', accent: '#FACC15', eyes: '#451a03', bgGradStart: '#EF4444', bgGradEnd: '#FACC15' }, // Spain (Spanish)
+  ir: { hair: '#334155', shirt: '#FFFFFF', accent: '#22C55E', eyes: '#EF4444', bgGradStart: '#22C55E', bgGradEnd: '#EF4444' }, // Iran (Persian)
+};
+
+const theme = THEMES[countryCode] || {
+  hair: '#3B82F6',
+  shirt: '#F3F4F6',
+  accent: '#10B981',
+  eyes: '#1F2937',
+  bgGradStart: '#3B82F6',
+  bgGradEnd: '#10B981'
+};
+
+const gradId = `bg-grad-${slug}`;
+const clipId = `flag-clip-${slug}`;
+---
+
+<svg viewBox="0 0 100 100" class="w-full h-full overflow-visible" aria-hidden="true" role="img" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color={theme.bgGradStart} />
+      <stop offset="100%" stop-color={theme.bgGradEnd} />
+    </linearGradient>
+
+    <!-- Flag Clip Path -->
+    <clipPath id={clipId}>
+      <circle cx="50" cy="84" r="8.5" />
+    </clipPath>
+  </defs>
+
+  <!-- 1. Circular Background Box (The "Box") -->
+  <circle cx="50" cy="50" r="43" fill={`url(#${gradId})`} stroke="rgba(255,255,255,0.15)" stroke-width="1.5" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.15))" />
+
+  <!-- 2. Back Hair -->
+  <path d="M 28 50 C 20 65 24 80 35 84 C 45 86 55 86 65 84 C 76 80 80 65 72 50 Z" fill={theme.hair} />
+
+  <!-- 3. Ears -->
+  <circle cx="28" cy="58" r="4.5" fill="#FFE5D9" />
+  <circle cx="72" cy="58" r="4.5" fill="#FFE5D9" />
+
+  <!-- 4. Face Base -->
+  <path d="M 29 55 C 29 72 36 78 50 78 C 64 78 71 72 71 55 C 71 45 64 42 50 42 C 36 42 29 45 29 55 Z" fill="#FFE5D9" />
+
+  <!-- 5. Eyes (Anime Style) -->
+  <!-- Left Eye -->
+  <path d="M 36 54 Q 40 50 44 54" stroke={theme.eyes} stroke-width="2.5" stroke-linecap="round" fill="none" />
+  <ellipse cx="40" cy="58" rx="3.2" ry="4.8" fill={theme.eyes} />
+  <circle cx="38.8" cy="56.5" r="1.1" fill="#FFFFFF" />
+  <circle cx="41.2" cy="59.5" r="0.7" fill="#FFFFFF" />
+
+  <!-- Right Eye -->
+  <path d="M 56 54 Q 60 50 64 54" stroke={theme.eyes} stroke-width="2.5" stroke-linecap="round" fill="none" />
+  <ellipse cx="60" cy="58" rx="3.2" ry="4.8" fill={theme.eyes} />
+  <circle cx="58.8" cy="56.5" r="1.1" fill="#FFFFFF" />
+  <circle cx="61.2" cy="59.5" r="0.7" fill="#FFFFFF" />
+
+  <!-- 6. Cute Blush & Mouth -->
+  <ellipse cx="37" cy="63" rx="2" ry="1" fill="#FFA4A4" opacity="0.6" />
+  <ellipse cx="63" cy="63" rx="2" ry="1" fill="#FFA4A4" opacity="0.6" />
+  <path d="M 48 65 Q 50 67.5 52 65" stroke="#D36B6B" stroke-width="1.8" stroke-linecap="round" fill="none" />
+
+  <!-- 7. Eyebrows -->
+  <path d="M 37 50 Q 40 48 43 51" stroke={theme.hair} stroke-width="1.2" stroke-linecap="round" fill="none" />
+  <path d="M 57 51 Q 60 48 63 50" stroke={theme.hair} stroke-width="1.2" stroke-linecap="round" fill="none" />
+
+  <!-- 8. Shirt / Clothes (popping out of bottom slightly) -->
+  <path d="M 32 78 C 32 78 35 96 50 96 C 65 96 68 78 68 78 Z" fill={theme.shirt} stroke="rgba(0,0,0,0.06)" stroke-width="1" />
+  <!-- Collar (accent colored) -->
+  <path d="M 43 78 Q 50 84 57 78" stroke={theme.accent} stroke-width="2.2" fill="none" stroke-linecap="round" />
+
+  <!-- 9. Front Hair / Bangs (Popping out slightly) -->
+  <!-- Center bangs -->
+  <path d="M 33 46 Q 40 54 44 49 C 47 46 48 54 51 52 C 54 50 56 55 58 48 C 61 42 66 50 67 45 C 67 45 61 35 50 35 C 39 35 33 45 33 46 Z" fill={theme.hair} />
+  <!-- Side hair strands -->
+  <path d="M 30 45 Q 26 55 27 65 C 28 67 29 65 29 63 C 29 55 33 48 33 48 Z" fill={theme.hair} />
+  <path d="M 70 45 Q 74 55 73 65 C 72 67 71 65 71 63 C 71 55 67 48 67 48 Z" fill={theme.hair} />
+  <!-- Ahoge (Anime Cowlick on top) -->
+  <path d="M 50 35 Q 52 21 45 23 Q 48 26 50 35 Z" fill={theme.hair} />
+
+  <!-- 10. Accessories: Gamer Headset (Representing modern digital virtual keyboard) -->
+  <!-- Headband -->
+  <path d="M 31 43 C 31 43 38 28 50 28 C 62 28 69 43 69 43" stroke={theme.accent} stroke-width="3" fill="none" stroke-linecap="round" />
+  <!-- Left Ear Cup -->
+  <rect x="23" y="50" width="6" height="13" rx="3" fill={theme.accent} stroke="rgba(0,0,0,0.15)" stroke-width="1" />
+  <circle cx="26" cy="56.5" r="1.5" fill="#FFFFFF" opacity="0.4" />
+  <!-- Right Ear Cup -->
+  <rect x="71" y="50" width="6" height="13" rx="3" fill={theme.accent} stroke="rgba(0,0,0,0.15)" stroke-width="1" />
+  <circle cx="74" cy="56.5" r="1.5" fill="#FFFFFF" opacity="0.4" />
+
+  <!-- 11. Circular Flag Badge on Chest (3D Shape Overlay) -->
+  <circle cx="50" cy="84" r="9.5" fill="#FFFFFF" stroke="rgba(0,0,0,0.15)" stroke-width="1" />
+  <image href={`https://flagcdn.com/w80/${countryCode}.png`} x="39" y="73" width="22" height="22" clip-path={`url(#${clipId})`} preserveAspectRatio="xMidYMid slice" />
+  <!-- Glossy Highlight Glass Overlay on Badge -->
+  <path d="M 41.5 81 C 44 76 56 76 58.5 81 C 56 83 44 83 41.5 81 Z" fill="#FFFFFF" opacity="0.25" />
+</svg>
