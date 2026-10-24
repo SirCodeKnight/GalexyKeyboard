@@ -27,9 +27,13 @@ const currentKeyboard = KEYBOARDS.find((keyboard) => currentPath === `${base}/${
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="author" content="GalexyKeyboard" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="color-scheme" content="light" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <link rel="manifest" href={`${base}/manifest.json`} />
+    <link rel="preconnect" href="https://flagcdn.com" crossorigin />
+    <link rel="dns-prefetch" href="//flagcdn.com" />
     <meta name="theme-color" content="#111827" />
     <link rel="sitemap" href={`${base}/sitemap-index.xml`} />
     {currentPath === '/' && <link rel="alternate" hreflang="en" href={canonical} />}
@@ -42,6 +46,8 @@ const currentKeyboard = KEYBOARDS.find((keyboard) => currentPath === `${base}/${
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="GalexyKeyboard multilingual virtual keyboard" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -75,7 +81,7 @@ const currentKeyboard = KEYBOARDS.find((keyboard) => currentPath === `${base}/${
       <div class="flag-marquee-content flex gap-8 whitespace-nowrap animate-marquee">
         {[...KEYBOARDS, ...KEYBOARDS].map((k) => (
           <a href={`${base}/${k.slug}/`} class="inline-flex items-center gap-2 hover:scale-105 transition-transform duration-200 group">
-            <img src={`https://flagcdn.com/w40/${k.countryCode}.png`} class="w-5 h-3.5 rounded-[2px] object-cover shadow-sm border border-ink/10" alt={k.name} loading="lazy" />
+            <img src={`https://flagcdn.com/w40/${k.countryCode}.png`} width="40" height="20" decoding="async" class="w-5 h-3.5 rounded-[2px] object-cover shadow-sm border border-ink/10" alt={k.name} loading="lazy" />
             <span class="text-xs font-semibold tracking-wider text-ink/75 group-hover:text-brassdark">{k.name}</span>
           </a>
         ))}
@@ -163,6 +169,16 @@ const currentKeyboard = KEYBOARDS.find((keyboard) => currentPath === `${base}/${
           inset 0 1px 2px 0 rgba(0,0,0,0.1),
           0 2px 4px 0 rgba(0,0,0,0.05);
         transform: translateY(3px);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .animate-marquee,
+        .flag-marquee-container::after,
+        .animate-bounce-slow,
+        .hero-key-animate,
+        .animate-pulse {
+          animation: none !important;
+        }
       }
 
       /* Cinematic Actions Button Style */
